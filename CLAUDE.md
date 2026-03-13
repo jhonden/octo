@@ -1,6 +1,9 @@
-# 微服务知识管理系统
+# Octo - 服务知识，触手可及
 
 ## 项目概述
+
+产品名：Octo
+Slogan：服务知识，触手可及
 
 这是一个架构师的个人提效工具，辅助架构师快速高质量完成需求方案分析和设计。
 
@@ -124,3 +127,47 @@ design-space-{id}/
 - 关键页面的线框图
 - 设计建议和原则
 - 或者其他你认为合适的格式
+
+---
+
+## 开发规范
+
+本项目遵循一套完整的开发规范，确保代码质量和团队协作效率。
+
+### 规范文档
+
+- [开发规范文档目录](./docs/standards/README.md) - 所有规范文档索引
+- [编码规范](./docs/standards/development-conventions.md) - 后端/前端编码、测试、安全规范
+- [代码提交流程](./docs/standards/code-submission-workflow.md) - 代码验证、提交流程、Git 提交规范
+
+### 规范使用场景
+
+#### 新会话启动时
+1. 阅读 [开发规范文档目录](./docs/standards/README.md)
+2. 阅读 [编码规范](./docs/standards/development-conventions.md)
+3. 阅读 [代码提交流程](./docs/standards/code-submission-workflow.md)
+
+#### 编码时
+- 后端开发：参考 [编码规范](./docs/standards/development-conventions.md) 的后端部分
+- 前端开发：参考 [编码规范](./docs/standards/development-conventions.md) 的前端部分
+- 测试开发：参考 [编码规范](./docs/standards/development-conventions.md) 的测试部分
+
+#### 提交代码时
+1. 验证代码：参考 [代码提交流程](./docs/standards/code-submission-workflow.md)
+2. 确认后提交
+3. 遵循 Git 提交规范
+
+### 重要原则
+
+**📋 路径检查**：在执行编译、启动等命令前，必须检查当前工作目录是否为项目根目录
+
+**✅ 验证后提交**：修改代码后必须验证编译、启动和功能，才能提交
+
+**📝 提交信息规范**：使用中文，格式为"类型：简短描述"（功能、修复、重构、文档等）
+
+---
+
+## 相关文档
+
+- [设计文档](./docs/superpowers/specs/2026-03-13-service-knowledge-manager-design.md) - 完整系统设计
+- [MVP 实现计划](./docs/superpowers/plans/2026-03-13-service-knowledge-manager-mvp.md) - 详细实现步骤
