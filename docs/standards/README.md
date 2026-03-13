@@ -9,8 +9,9 @@
 | 文档名称 | 职责 | 适用场景 |
 |---------|------|---------|
 | [项目总览](../CLAUDE.md) | 项目整体介绍、目录结构、技术栈、核心功能 | 新会话开始，快速了解项目 |
-| [编码规范](./development-conventions.md) | 后端/前端编码规范、测试规范、安全规范 | 编写代码时参考 |
+| [编码规范](./development-conventions.md) | 后端/前端编码规范、安全规范 | 编写代码时参考 |
 | [代码提交流程](./code-submission-workflow.md) | 代码验证、提交流程、Git 提交规范 | 提交代码时参考 |
+| [测试规范](./testing-guidelines.md) | 测试类型、用例设计、代码编写、执行维护 | 编写测试时参考 |
 | [MVP 实现计划](../superpowers/plans/2026-03-13-service-knowledge-manager-mvp.md) | MVP 阶段详细实现计划 | 实现开发时参考 |
 
 ---
