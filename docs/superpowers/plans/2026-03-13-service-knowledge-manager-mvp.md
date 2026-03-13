@@ -1,16 +1,111 @@
-# 微服务知识管理系统 - MVP实现计划
+# Octo - MVP实现计划
 
 > **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** 构建一个可用的微服务知识管理系统MVP，支持服务知识管理、设计空间管理和基本的MCP工具暴露，使架构师能够分析服务、创建设计空间并通过AI工具协作完成方案设计。
+**Goal:** 构建一个可用的微服务知识管理系统MVP，支持服务知识管理、设计空间管理、技能管理和基本的MCP工具暴露，使架构师能够分析服务、创建设计空间并通过AI工具协作完成方案设计。
 
-**Architecture:** Spring Boot 3.x后端提供RESTful API和MCP Server，PostgreSQL存储数据，React 18+ + Ant Design前端实现"精致工业风"暗色主题UI，约定目录结构用于服务代码和知识文档存储。系统采用分层架构：Controller层处理HTTP/MCP请求，Service层实现业务逻辑，Repository层通过Spring Data JPA访问数据库，FileSystem模块管理文件系统操作。
+**Architecture:** Spring Boot 3.x后端提供RESTful API和MCP Server，PostgreSQL存储数据，React 18+ + Ant Design前端实现"精致工业风"暗色主题UI。系统采用轻量级DDD架构，按4个限界上下文划分：Service Knowledge、Design Space、Skill Management、MCP Integration。每个上下文内部采用分层：Controller层处理HTTP/MCP请求，Application Service层编排用例，Domain Service层实现业务逻辑，Repository层通过Spring Data JPA访问数据库。
 
 **Tech Stack:**
 - 后端: Spring Boot 3.x, Java 17+, PostgreSQL 15+, Spring Data JPA, Jackson
 - 前端: React 18+, Ant Design 5.x, React Router 6.x, Axios
 - MCP: 基于Spring MVC实现JSON-RPC 2.0
 - 构建工具: Maven (backend), Vite (frontend)
+
+---
+
+## 后端文件结构（DDD分层）
+
+```
+backend/src/main/java/com/skm/
+├── service-knowledge/              # 服务知识上下文
+│   ├── domain/                  # 领域层
+│   │   ├── ServiceKnowledge.java
+│   │   └── ServiceKnowledgeRepository.java
+│   ├── application/             # 应用层
+│   │   ├── ServiceKnowledgeService.java
+│   │   ├── ServiceKnowledgeController.java
+│   │   └── dto/
+│   │       ├── CreateServiceKnowledgeCommand.java
+│   │       └── ServiceKnowledgeDTO.java
+│   └── infrastructure/           # 基础设施层
+│       └── persistence/
+│           └── JpaServiceKnowledgeRepository.java
+│
+├── design-space/                  # 设计空间上下文
+│   ├── domain/
+│   │   ├── DesignSpace.java
+│   │   └── DesignSpaceRepository.java
+│   ├── application/
+│   │   ├── DesignSpaceService.java
+│   │   ├── DesignSpaceController.java
+│   │   └── dto/
+│   │       ├── CreateDesignSpaceCommand.java
+│   │       └── DesignSpaceDTO.java
+│   └── infrastructure/
+│       ├── persistence/
+│       └── JpaDesignSpaceRepository.java
+│
+├── skill-management/              # 技能管理上下文
+│   ├── domain/
+│   │   ├── Skill.java
+│   │   └── SkillRepository.java
+│   ├── application/
+│   │   ├── SkillService.java
+│   │   ├── SkillController.java
+│   │   └── dto/
+│   │       └── SkillDTO.java
+│   └── infrastructure/
+│       └── persistence/
+│           └── JpaSkillRepository.java
+│
+├── mcp-integration/               # MCP集成上下文
+│   ├── application/
+│   │   ├── McpServerController.java
+│   │   └── dto/
+│   │       ├── McpRequest.java
+│   │       ├── McpResponse.java
+│   │       └── ToolDefinition.java
+│   └── infrastructure/
+│       └── mcp/
+│           ├── ServiceKnowledgeMcpAdapter.java
+│           ├── DesignSpaceMcpAdapter.java
+│           └── SkillMcpAdapter.java
+│
+├── shared/                          # 共享内核
+│   ├── domain/
+│   │   ├── ServiceKnowledgeId.java  # 值对象
+│   │   ├── DesignSpaceId.java
+│   │   └── exception/
+│   │       ├── BusinessException.java
+│   │       └── ResourceNotFoundException.java
+│   └── config/
+│       └── DatabaseConfig.java
+│
+└── ServiceKnowledgeManagerApplication.java
+```
+
+## 前端文件结构
+
+```
+frontend/
+├── src/
+│   ├── api/                    # API调用层
+│   │   └── api.js
+│   ├── components/              # 共享组件
+│   ├── pages/                  # 页面组件
+│   │   ├── Dashboard.jsx
+│   │   ├── ServiceKnowledgePage.jsx
+│   │   ├── DesignSpacesPage.jsx
+│   │   └── SkillManagementPage.jsx
+│   ├── context/                # Context状态管理
+│   ├── utils/                  # 工具函数
+│   ├── App.jsx
+│   └── main.jsx
+├── public/                     # 静态资源
+├── index.html
+└── package.json
+```
 
 ---
 

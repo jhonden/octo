@@ -625,6 +625,94 @@ const darkTheme = {
 
 ---
 
+## 8. DDD 架构设计
+
+### 8.1 架构原则
+
+本项目采用**轻量级领域驱动设计（DDD）**，核心原则：
+
+1. **清晰的限界上下文**：按业务领域划分代码边界
+2. **高内聚低耦合**：每个上下文内部紧密协作，外部通过明确接口通信
+3. **关注业务逻辑**：Service 层封装领域逻辑，Repository 层专注数据访问
+4. **适度设计**：避免过度设计，保持简洁实用
+
+### 8.2 限界上下文划分
+
+```
+Octo
+├── Service Knowledge Context（服务知识上下文）
+│   ├── 核心领域：服务知识的市场管理
+│   ├── 能力：服务知识的 CRUD、发布、检索
+│   ├── 技术栈：Spring Data JPA
+│   └── 暴露方式：MCP 工具、REST API
+│
+├── Design Space Context（设计空间上下文）
+│   ├── 核心领域：架构师个人工作空间管理
+│   ├── 能力：创建空间、服务订阅、文件系统操作、Git集成
+│   ├── 技术栈：Spring Data JPA + 文件系统 API
+│   └── 暴露方式：MCP 工具、REST API
+│
+├── Skill Management Context（技能管理上下文）
+│   ├── 核心领域：技能的安装、管理、适配
+│   ├── 能力：技能安装、配置、多平台适配
+│   ├── 技术栈：Spring Data JPA
+│   └── 暴露方式：管理界面、CLI 工具
+│
+└── MCP Integration Context（MCP 集成上下文）
+    ├── 核心领域：工具注册和调用分发
+    ├── 能力：工具定义、JSON-RPC 通信
+    ├── 技术栈：Spring MVC JSON-RPC 实现
+    └── 暴露方式：MCP 端点
+```
+
+### 8.3 分层架构
+
+每个限界上下文遵循以下分层：
+
+```
+{context-name}/
+├── domain/                  # 领域层
+│   ├── entity/             # 实体（包含基本验证）
+│   ├── repository/         # 仓储接口（领域层）
+│   └── service/            # 领域服务（复杂领域逻辑）
+├── application/             # 应用层
+│   ├── service/           # 应用服务（用例编排）
+│   ├── controller/        # REST 控制器
+│   └── dto/             # 数据传输对象
+├── infrastructure/         # 基础设施层
+│   ├── persistence/       # JPA Repository 实现
+│   ├── mcp/             # MCP 工具适配器
+│   └── file-system/       # 文件系统操作（仅需要时）
+└── model/                 # JPA 实体（持久化用）
+```
+
+### 8.4 层级职责
+
+| 层级 | 职责 | 说明 |
+|------|------|------|
+| **Controller** | 处理 HTTP 请求、参数验证、返回响应 | 接收请求，调用应用服务，返回响应 |
+| **Application Service** | 用例编排、DTO 转换 | 编排业务流程，转换领域模型和 DTO |
+| **Domain Service** | 复杂领域逻辑 | 封装跨实体的业务逻辑 |
+| **Repository Interface** | 数据访问抽象 | 定义数据访问契约（领域层） |
+| **Repository Impl** | 数据访问实现 | 实现 JPA 持久化（基础设施层） |
+| **Entity** | 领域实体 | 包含业务规则和数据验证 |
+| **DTO** | 数据传输对象 | 对外接口的数据结构 |
+
+### 8.5 跨上下文交互
+
+**上下文之间通过明确的接口通信：**
+
+1. **Service Knowledge ↔ Design Space**：设计空间订阅服务知识（通过 ID 引用）
+2. **Service Knowledge ↔ MCP**：MCP 工具暴露服务知识查询
+3. **Design Space ↔ MCP**：MCP 工具暴露设计空间操作
+4. **Skill Management ↔ 其他上下文**：技能安装和配置（松耦合）
+
+**通信方式：**
+- **同步**：直接调用其他上下文的应用服务
+- **异步**：通过事件总线（未来扩展）
+
+---
+
 ## 9. 技术栈
 
 ### 8.1 后端技术栈
@@ -632,7 +720,14 @@ const darkTheme = {
 - **框架**：Spring Boot 3.x
 - **语言**：Java 17+
 - **数据库**：PostgreSQL
-- **ORM**：Spring Data JPA / MyBatis-Plus
+- **ORM**：Spring Data JPA
+- **MCP Server**：基于Spring MVC实现
+- **前端通信**：RESTful API
+
+- **框架**：Spring Boot 3.x
+- **语言**：Java 17+
+- **数据库**：PostgreSQL
+- **ORM**：Spring Data JPA
 - **MCP Server**：基于Spring MVC实现
 - **前端通信**：RESTful API
 
