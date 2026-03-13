@@ -1,0 +1,31 @@
+# Node modules
+node_modules/
+design-preview/node_modules/
+
+# Build output
+dist/
+target/
+*.class
+design-preview/dist/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.DS_Store
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.swp
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Claude Code
+.claude/projects/
+.claude/cache/

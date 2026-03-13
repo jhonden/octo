@@ -1,0 +1,22 @@
+{
+  "name": "service-knowledge-manager-ui-preview",
+  "version": "1.0.0",
+  "description": "微服务知识管理器 - UI 设计预览",
+  "scripts": {
+    "start": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "antd": "^5.12.0",
+    "styled-components": "^6.1.8",
+    "dayjs": "^1.11.10",
+    "@ant-design/icons": "^5.2.6"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.2.0",
+    "vite": "^5.0.0"
+  }
+}
