@@ -16,7 +16,7 @@ public interface ServiceKnowledgeRepository extends JpaRepository<ServiceKnowled
   List<ServiceKnowledge> findByServiceName(@Param("serviceName") String serviceName);
 
   @Query("SELECT sk FROM ServiceKnowledge sk WHERE " +
-         "(:name IS NULL OR sk.serviceName ILIKE %:name%) AND " +
+         "(:name IS NULL OR sk.serviceName ILIKE CONCAT('%', :name, '%')) AND " +
          "(:status IS NULL OR sk.status = :status)")
   List<ServiceKnowledge> search(@Param("name") String name, @Param("status") String status);
 
