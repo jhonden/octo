@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Octo - 设计工作空间（Dock 导航）</title>
+  <style>
+    /* 全局样式重置 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background: linear-gradient(180deg, #0d1b2a 0%, #1a1a2e 50%, #0f111a 100%);
+      color: #e2e8f0;
+      min-height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* 滚动条样式 */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(255,255,255,0.02);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.08);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255,255,255,0.12);
+    }
+
+    /* 顶部导航栏 */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 70px;
+      padding: 0 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 100;
+      background: transparent;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand-logo-img {
+      width: 44px;
+      height: 44px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-logo {
+      display: none;
+    }
+
+    .brand-slogan {
+      color: #6b7280;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 1px;
+      opacity: 0.8;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 16px;
+    }
+
+    .icon-btn {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      color: #6b7280;
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 16px;
+    }
+
+    .icon-btn:hover {
+      background: rgba(59, 130, 246, 0.1);
+      border-color: rgba(59, 130, 246, 0.3);
+      color: #ffffff;
+      transform: scale(1.1);
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+    }
+
+    /* 主内容区 */
+    .main-content {
+      flex: 1;
+      padding: 60px 60px 60px 100px 120px;
+      overflow-y: auto;
+      height: calc(100vh - 70px);
+      position: relative;
+    }
+
+    /* 底部 Dock 导航 */
+    .dock {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 16px 32px;
+      background: rgba(255,255,255,0.04);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      border: 1px solid rgba(255,255,255,0.06);
+      z-index: 1000;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4),
+                  0 8px 20px rgba(59, 130, 246, 0.15),
+                  inset 0 2px 4px rgba(255,255,255,0.03);
+    }
+
+    /* Dock 图标 */
+    .dock-item {
+      position: relative;
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.05);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    .dock-item::before {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 6px;
+      height: 6px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 50%;
+      transition: all 0.3s ease;
+      opacity: 0;
+    }
+
+    .dock-item:hover::before {
+      opacity: 1;
+      bottom: -12px;
+      width: 8px;
+      height: 8px;
+    }
+
+    .dock-item:hover {
+      transform: translateY(-8px) scale(1.15);
+      background: rgba(255,255,255,0.08);
+    }
+
+    .dock-item.active {
+      transform: translateY(-12px) scale(1.2);
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(37, 99, 235, 0.3));
+    }
+
+    .dock-item.active::before {
+      opacity: 1;
+      bottom: -16px;
+      width: 10px;
+      height: 10px;
+      background: #3b82f6;
+      box-shadow: 0 0 12px #3b82f6,
+                  0 4px 24px rgba(59, 130, 246, 0.5);
+    }
+
+    .dock-icon {
+      font-size: 28px;
+      transition: all 0.3s ease;
+    }
+
+    .dock-item.active .dock-icon {
+      transform: scale(1.1);
+    }
+
+    .dock-label {
+      position: absolute;
+      bottom: -40px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.9);
+      color: #ffffff;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      opacity: 0;
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+
+    .dock-item:hover .dock-label,
+    .dock-item.active .dock-label {
+      opacity: 1;
+      bottom: -50px;
+    }
+
+    /* 装饰元素 - 环境光 */
+    .ambient-light {
+      position: fixed;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .ambient-light-1 {
+      top: -200px;
+      left: -100px;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+    animation: pulse-1 8s ease-in-out infinite;
+    }
+
+    .ambient-light-2 {
+      top: -100px;
+      right: -150px;
+      background: radial-gradient(circle, rgba(37, 99, 235, 0.12) 0%, transparent 60%);
+      animation: pulse-2 10s ease-in-out infinite;
+    }
+
+    .ambient-light-3 {
+      bottom: 10%;
+      right: -200px;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.08) 0%, transparent 50%);
+      animation: pulse-3 12s ease-in-out infinite;
+    }
+
+    @keyframes pulse-1 {
+      0%, 100% { opacity: 0.3; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(1.1); }
+    }
+
+    @keyframes pulse-2 {
+      0%, 100% { opacity: 0.2; transform: scale(0.8); }
+      50% { opacity: 0.5; transform: scale(1); }
+    }
+
+    @keyframes pulse-3 {
+      0%, 100% { opacity: 0.15; transform: scale(0.9); }
+      50% { opacity: 0.3; transform: scale(1.05); }
+    }
+
+    /* 内容区 */
+    .content {
+      background: transparent;
+    }
+
+    .page-title {
+      color: #ffffff;
+      font-size: 56px;
+      font-weight: 300;
+      margin-bottom: 20px;
+      letter-spacing: 6px;
+      opacity: 0.9;
+      position: relative;
+    }
+
+    .page-title::after {
+      content: '';
+      position: absolute;
+      bottom: -16px;
+      left: 0;
+      width: 120px;
+      height: 1px;
+      background: linear-gradient(90deg, #3b82f6 0%, rgba(255,255,255,0) 100%);
+    }
+
+    .welcome-subtitle {
+      color: #6b7280;
+      font-size: 16px;
+      font-weight: 400;
+      margin-bottom: 60px;
+      letter-spacing: 2px;
+      opacity: 0.7;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 28px;
+      margin-bottom: 60px;
+    }
+
+    .stat-card {
+      background: rgba(255,255,255,0.02);
+      backdrop-filter: blur(30px);
+      border: 1px solid rgba(255,255,255,0.04);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, transparent 0%, rgba(59, 130, 246, 0.02) 100%);
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    .stat-card:hover::before {
+      opacity: 1;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-12px) scale(1.02);
+      border-color: rgba(59, 130, 246, 0.2);
+      box-shadow: 0 20px 60px rgba(59, 130, 246, 0.3);
+    }
+
+    .stat-label {
+      color: #6b7280;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 16px;
+      letter-spacing: 1px;
+      opacity: 0.8;
+    }
+
+    .stat-value {
+      color: #ffffff;
+      font-size: 56px;
+      font-weight: 200;
+      letter-spacing: -3px;
+      text-shadow: 0 6px 30px rgba(0,0,0,0.4);
+    }
+
+    .section-title {
+      color: #ffffff;
+      font-size: 22px;
+      font-weight: 500;
+      margin: 70px 0 28px 0;
+      letter-spacing: 4px;
+      opacity: 0.85;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+      margin-bottom: 60px;
+    }
+
+    .info-card {
+      background: rgba(255,255,255,0.02);
+      backdrop-filter: blur(30px);
+      border: 1px solid rgba(255,255,255,0.04);
+      border-radius: 20px;
+      padding: 32px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .info-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, transparent 0%, rgba(59, 130, 246, 0.03) 100%);
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    .info-card:hover::before {
+      opacity: 1;
+    }
+
+    .info-card:hover {
+      transform: translateY(-12px) scale(1.02);
+      border-color: rgba(59, 130, 246, 0.2);
+      box-shadow: 0 20px 50px rgba(59, 130, 246, 0.25);
+    }
+
+    .info-card-title {
+      color: #ffffff;
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      letter-spacing: 1px;
+    }
+
+    .info-card-desc {
+      color: #6b7280;
+      font-size: 14px;
+      margin-bottom: 24px;
+      line-height: 1.7;
+      opacity: 0.85;
+    }
+
+    .info-card-meta {
+      color: #4b5563;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .tag {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #ffffff;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #10b981;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
+    }
+
+    /* 装饰元素 */
+    .decoration-line {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(59, 130, 246, 0.3) 0%, transparent 100%);
+      margin: 60px 0 40px 0;
+    }
+
+    /* 响应式调整 */
+    @media (max-width: 1200px) {
+      .dock {
+        bottom: 20px;
+        padding: 12px 20px;
+        gap: 6px;
+      }
+      .dock-item {
+        width: 56px;
+        height: 56px;
+      }
+      .dock-icon {
+        font-size: 24px;
+      }
+      .main-content {
+        padding-bottom: 120px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 环境光效 -->
+  <div class="ambient-light ambient-light-1"></div>
+  <div class="ambient-light ambient-light-2"></div>
+  <div class="ambient-light ambient-light-3"></div>
+
+  <!-- 顶部导航栏 -->
+  <header class="header">
+    <div class="brand">
+      <img src="octo_logo.jpg" alt="Octo Logo" class="brand-logo-img" />
+      <div class="brand-text">
+        <span class="brand-slogan">设计工作空间</span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <div class="icon-btn">🔔</div>
+      <div class="icon-btn">👤</div>
+    </div>
+  </header>
+
+  <!-- 底部 Dock 导航 -->
+  <div class="dock">
+    <div class="dock-item active">
+      <span class="dock-label">仪表盘</span>
+      <span class="dock-icon">📊</span>
+    </div>
+    <div class="dock-item">
+      <span class="dock-label">服务知识</span>
+      <span class="dock-icon">📚</span>
+    </div>
+    <div class="dock-item">
+      <span class="dock-label">设计空间</span>
+      <span class="dock-icon">💼</span>
+    </div>
+  </div>
+
+  <!-- 主内容区 -->
+  <div class="layout">
+    <main class="main-content">
+      <div class="content">
+        <h1 class="page-title">设计工作空间</h1>
+        <p class="welcome-subtitle">创造 · 构思 · 实现</p>
+
+        <!-- 统计卡片 -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">设计空间</div>
+            <div class="stat-value">5</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">服务知识</div>
+            <div class="stat-value">23</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">历史设计</div>
+            <div class="stat-value">15</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">个人模板</div>
+            <div class="stat-value">3</div>
+          </div>
+        </div>
+
+        <!-- 装饰线 -->
+        <div class="decoration-line"></div>
+
+        <!-- 快速入口 -->
+        <h2 class="section-title">快速开始</h2>
+
+        <div class="card-grid">
+          <div class="info-card">
+            <div class="info-card-title">创建设计空间</div>
+            <div class="info-card-desc">为新的设计项目创建一个干净的工作空间</div>
+            <div class="info-card-meta">
+              <span class="tag">快速开始</span>
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-title">添加服务知识</div>
+            <div class="info-card-desc">将分析后的服务知识录入系统</div>
+            <div class="info-card-meta">
+              <span class="tag">数据导入</span>
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-title">查看设计历史</div>
+            <div class="info-card-desc">浏览之前的设计方案，获取灵感和参考</div>
+            <div class="info-card-meta">
+              <span class="status-badge">
+                <span class="status-dot"></span>
+                最近更新
+              </span>
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-title">访问技能管理</div>
+            <div class="info-card-desc">Dock 式桌面 · 专业设计环境</div>
+            <div class="info-card-meta">
+              <span class="tag">设置</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 装饰线 -->
+        <div class="decoration-line"></div>
+
+        <!-- 最近活动 -->
+        <h2 class="section-title">最近更新</h2>
+
+        <div class="card-grid">
+          <div class="info-card">
+            <div class="info-card-title">user-service</div>
+            <div class="info-card-desc">用户服务 · 用户认证和授权</div>
+            <div class="info-card-meta">
+              <span class="tag">已发布</span>
+              <span>v1.0.0</span>
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-title">order-service</div>
+            <div class="info-card-desc">订单服务 · 订单管理功能</div>
+            <div class="info-card-meta">
+              <span class="tag">已发布</span>
+              <span>v1.2.0</span>
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-title">payment-service</div>
+            <div class="info-card-desc">支付服务 · 支付接口集成</div>
+            <div class="info-card-meta">
+              <span class="tag">草稿</span>
+              <span>v0.1.0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    document.querySelectorAll('.dock-item').forEach(item => {
+      item.addEventListener('click', function() {
+        document.querySelectorAll('.dock-item').forEach(i => i.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>
