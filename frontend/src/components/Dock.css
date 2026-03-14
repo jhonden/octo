@@ -169,6 +169,18 @@
   z-index: 999; /* Below fan menu but above dock */
 }
 
+/* Show fan menu and fan items when hovering parent menu */
+.dock-fan-backdrop {
+  position: absolute;
+  bottom: 26px; /* Align with parent menu bottom */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 400px; /* Wide enough to cover fan menu */
+  height: 200px; /* Cover fan menu area */
+  pointer-events: none; /* Let mouse pass through to menu items */
+  z-index: 999; /* Below fan menu but above dock */
+}
+
 /* Show fan menu when hovering parent menu */
 .dock-item.has-submenu:hover .dock-fan-menu {
   opacity: 1;
