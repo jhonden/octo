@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Octo - 主页预览（液态导航）</title>
+  <style>
+    /* 全局样式重置 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background: linear-gradient(180deg, #0c4a6e 0%, #1a1a2e 100%);
+      color: #e2e8f0;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    /* 滚动条样式 */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(255,255,255,0.02);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.1);
+      border-radius: 4px;
+    }
+
+    /* 顶部导航栏 */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 70px;
+      padding: 0 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 100;
+      background: rgba(255,255,255,0.02);
+      backdrop-filter: blur(10px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand-logo-img {
+      width: 42px;
+      height: 42px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-logo {
+      display: none;
+    }
+
+    .brand-slogan {
+      color: #94a3b8;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 1px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .icon-btn {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #e2e8f0;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 16px;
+    }
+
+    .icon-btn:hover {
+      background: rgba(59, 130, 246, 0.15);
+      border-color: rgba(59, 130, 246, 0.3);
+      color: #ffffff;
+      transform: scale(1.15);
+    }
+
+    /* 主内容区 */
+    .main-content {
+      flex: 1;
+      padding: 50px 50px 50px 100px;
+      overflow-y: auto;
+      height: calc(100vh - 70px);
+    }
+
+    /* 液态导航 */
+    .liquid-nav {
+      position: fixed;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 100px;
+      z-index: 50;
+    }
+
+    .liquid-track {
+      position: relative;
+      height: 300px;
+      border: 2px solid rgba(59, 130, 246, 0.2);
+      border-radius: 50px;
+    }
+
+    /* 导航项 - 液滴形状 */
+    .nav-droplet {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 70px;
+      height: 70px;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(37, 99, 235, 0.15));
+      border-radius: 50% 50% 50% 50% / 50% 50% 100% 0%;
+      backdrop-filter: blur(15px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      animation: float 4s ease-in-out infinite;
+    }
+
+    .nav-droplet:hover {
+      transform: translateX(-50%) scale(1.25);
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(37, 99, 235, 0.3));
+      box-shadow: 0 12px 32px rgba(59, 130, 246, 0.5);
+    }
+
+    .nav-droplet.active {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      border-color: #60a5fa;
+      box-shadow: 0 16px 40px rgba(59, 130, 246, 0.7);
+      animation: none;
+    }
+
+    .nav-droplet.active .nav-icon {
+      color: #ffffff;
+    }
+
+    .nav-droplet.active .nav-text {
+      color: #ffffff;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateX(-50%) translateY(0);
+      }
+      50% {
+        transform: translateX(-50%) translateY(-5px);
+      }
+    }
+
+    /* 位置 - 垂直分布 */
+    .nav-droplet:nth-child(1) { top: 0; animation-delay: 0s; }
+    .nav-droplet:nth-child(2) { top: 100px; animation-delay: 1.3s; }
+    .nav-droplet:nth-child(3) { top: 200px; animation-delay: 2.6s; }
+
+    .nav-icon {
+      font-size: 26px;
+      color: #94a3b8;
+      transition: all 0.3s ease;
+    }
+
+    .nav-text {
+      font-size: 11px;
+      color: #6b7280;
+      font-weight: 600;
+      margin-top: 4px;
+      transition: all 0.3s ease;
+      letter-spacing: 0.5px;
+    }
+
+    /* 内容区 */
+    .content {
+      background: transparent;
+    }
+
+    .page-title {
+      color: #ffffff;
+      font-size: 48px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -1px;
+    }
+
+    .welcome-subtitle {
+      color: #94a3b8;
+      font-size: 17px;
+      font-weight: 500;
+      margin-bottom: 48px;
+      letter-spacing: 0.5px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 28px;
+      margin-bottom: 56px;
+    }
+
+    .stat-card {
+      background: rgba(255,255,255,0.04);
+      backdrop-filter: blur(25px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 24px;
+      padding: 36px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 200%;
+      height: 200%;
+      background: conic-gradient(from 0deg, transparent, rgba(59, 130, 246, 0.1), transparent 30deg);
+      animation: rotate 8s linear infinite;
+    }
+
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .stat-card:hover {
+      background: rgba(59, 130, 246, 0.12);
+      border-color: rgba(59, 130, 246, 0.4);
+      transform: translateY(-10px) scale(1.02);
+      box-shadow: 0 16px 50px rgba(59, 130, 246, 0.4);
+    }
+
+    .stat-label {
+      color: #94a3b8;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 14px;
+      letter-spacing: 1px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .stat-value {
+      color: #ffffff;
+      font-size: 52px;
+      font-weight: 700;
+      letter-spacing: -2px;
+      text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      position: relative;
+      z-index: 1;
+    }
+
+    .section-title {
+      color: #ffffff;
+      font-size: 24px;
+      font-weight: 700;
+      margin: 64px 0 32px 0;
+      letter-spacing: 1px;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+      margin-bottom: 56px;
+    }
+
+    .info-card {
+      background: rgba(255,255,255,0.04);
+      backdrop-filter: blur(25px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.15);
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .info-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 200%;
+      height: 200%;
+      background: conic-gradient(from 45deg, transparent, rgba(59, 130, 246, 0.08), transparent 90deg);
+      animation: rotate-glow 10s linear infinite;
+    }
+
+    @keyframes rotate-glow {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .info-card:hover {
+      background: rgba(59, 130, 246, 0.1);
+      border-color: rgba(59, 130, 246, 0.4);
+      transform: translateY(-10px) scale(1.02);
+      box-shadow: 0 16px 40px rgba(59, 130, 246, 0.3);
+    }
+
+    .info-card-title {
+      color: #ffffff;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      letter-spacing: 0.5px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .info-card-desc {
+      color: #94a3b8;
+      font-size: 14px;
+      margin-bottom: 20px;
+      line-height: 1.7;
+      position: relative;
+      z-index: 1;
+    }
+
+    .info-card-meta {
+      color: #6b7280;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .tag {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #ffffff;
+      padding: 6px 18px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.5);
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #10b981;
+      font-size: 13px;
+      font-weight: 600;
+      margin-top: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      background: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 16px rgba(16, 185, 129, 0.8);
+    }
+
+    /* 响应式调整 */
+    @media (max-width: 1200px) {
+      .liquid-nav {
+        display: none;
+      }
+      .main-content {
+        padding-left: 50px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 顶部导航栏 -->
+  <header class="header">
+    <div class="brand">
+      <img src="octo_logo.jpg" alt="Octo Logo" class="brand-logo-img" />
+      <div class="brand-text">
+        <span class="brand-slogan">服务知识，触手可及</span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <div class="icon-btn">🔔</div>
+      <div class="icon-btn">👤</div>
+    </div>
+  </header>
+
+  <!-- 液态导航 -->
+  <div class="liquid-nav">
+    <div class="liquid-track">
+      <!-- 导航项 - 液滴 -->
+      <div class="nav-droplet active">
+        <span class="nav-icon">📊</span>
+        <span class="nav-text">仪表盘</span>
+      </div>
+      <div class="nav-droplet">
+        <span class="nav-icon">📚</span>
+        <span class="nav-text">服务知识</span>
+      </div>
+      <div class="nav-droplet">
+        <span class="nav-icon">💼</span>
+        <span class="nav-text">设计空间</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 主内容区 -->
+  <div class="layout">
+    <main class="main-content">
+      <!-- 内容区 -->
+      <div class="content">
+        <h1 class="page-title">欢迎回来，架构师</h1>
+        <p class="welcome-subtitle">液态灵感，流动创意</p>
+
+        <!-- 统计卡片 -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">设计空间</div>
+            <div class="stat-value">5</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">服务知识</div>
+            <div class="stat-value">23</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">历史设计</div>
+            <div class="stat-value">15</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">个人模板</div>
+            <div class="stat-value">3</div>
+          </div>
+        </div>
+
+        <!-- 快速入口 -->
+        <h2 class="section-title">快速开始</h2>
+
+        <div class="card-grid">
+          <div class="info-card">
+            <div class="info-card-title">创建设计空间</div>
+            <div class="info-card-desc">为新的设计项目创建一个干净的工作空间</div>
+            <div class="info-card-meta">
+              <span class="tag">快速开始</span>
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-title">添加服务知识</div>
+            <div class="info-card-desc">将分析后的服务知识录入系统</div>
+            <div class="info-card-meta">
+              <span class="tag">数据导入</span>
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-title">查看设计历史</div>
+            <div class="info-card-desc">浏览之前的设计方案，获取灵感和参考</div>
+            <div class="info-card-meta">
+              <span class="status-badge">
+                <span class="status-dot"></span>
+                最近更新
+              </span>
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-title">访问技能管理</div>
+            <div class="info-card-desc">流动创意，灵感滴落</div>
+            <div class="info-card-meta">
+              <span class="tag">设置</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 最近活动 -->
+        <h2 class="section-title">最近更新</h2>
+
+        <div class="card-grid">
+          <div class="info-card">
+            <div class="info-card-title">user-service</div>
+            <div class="info-card-desc">用户服务 - 用户认证和授权</div>
+            <div class="info-card-meta">
+              <span class="tag">已发布</span>
+              <span>v1.0.0</span>
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-title">order-service</div>
+            <div class="info-card-desc">订单服务 - 订单管理功能</div>
+            <div class="info-card-meta">
+              <span class="tag">已发布</span>
+              <span>v1.2.0</span>
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-title">payment-service</div>
+            <div class="info-card-desc">支付服务 - 支付接口集成</div>
+            <div class="info-card-meta">
+              <span class="tag">草稿</span>
+              <span>v0.1.0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    document.querySelectorAll('.nav-droplet').forEach(item => {
+      item.addEventListener('click', function() {
+        document.querySelectorAll('.nav-droplet').forEach(i => i.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Octo - 主页预览（点阵导航）</title>
+  <style>
+    /* 全局样式重置 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background: #0a0a0a;
+      color: #ffffff;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    /* 滚动条样式 */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(255,255,255,0.03);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.1);
+      border-radius: 3px;
+    }
+
+    /* 顶部导航栏 */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      padding: 0 50px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 100;
+      background: transparent;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand-logo-img {
+      width: 36px;
+      height: 36px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-logo {
+      display: none;
+    }
+
+    .brand-slogan {
+      color: #6b7280;
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: 2px;
+      opacity: 0.7;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 20px;
+    }
+
+    .icon-btn {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #6b7280;
+      width: 36px;
+      height: 36px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 16px;
+    }
+
+    .icon-btn:hover {
+      background: rgba(255,255,255,0.05);
+      color: #ffffff;
+    }
+
+    /* 主内容区 */
+    .main-content {
+      flex: 1;
+      padding: 60px 60px 60px 300px;
+      overflow-y: auto;
+      height: calc(100vh - 60px);
+    }
+
+    /* 点阵导航 */
+    .dot-nav {
+      position: fixed;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 120px;
+      z-index: 50;
+    }
+
+    .nav-line {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 1px;
+      height: 180px;
+      background: linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.1) 20%, rgba(255,255,255,0.1) 80%, transparent 100%);
+    }
+
+    /* 导航点 */
+    .nav-dot {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 12px;
+      height: 12px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .nav-dot::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 30px;
+      height: 30px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 50%;
+      transition: all 0.4s ease;
+    }
+
+    .nav-dot:hover::before {
+      width: 40px;
+      height: 40px;
+      background: rgba(59, 130, 246, 0.1);
+      border-color: rgba(59, 130, 246, 0.3);
+    }
+
+    .nav-dot.active {
+      background: #3b82f6;
+    }
+
+    .nav-dot.active::before {
+      width: 36px;
+      height: 36px;
+      background: rgba(59, 130, 246, 0.2);
+      border-color: #60a5fa;
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+    }
+
+    .nav-label {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px;
+      color: #6b7280;
+      font-weight: 500;
+      opacity: 0;
+      transition: all 0.3s ease;
+      letter-spacing: 1px;
+      white-space: nowrap;
+    }
+
+    .nav-dot:hover .nav-label {
+      opacity: 1;
+    }
+
+    .nav-dot.active .nav-label {
+      opacity: 1;
+      color: #ffffff;
+    }
+
+    /* 位置 */
+    .nav-dot:nth-child(1) {
+      top: 0;
+    }
+
+    .nav-dot:nth-child(1) .nav-label {
+      top: 24px;
+    }
+
+    .nav-dot:nth-child(2) {
+      top: 90px;
+    }
+
+    .nav-dot:nth-child(2) .nav-label {
+      top: 114px;
+    }
+
+    .nav-dot:nth-child(3) {
+      top: 180px;
+    }
+
+    .nav-dot:nth-child(3) .nav-label {
+      top: 204px;
+    }
+
+    /* 内容区 */
+    .content {
+      background: transparent;
+    }
+
+    .page-title {
+      color: #ffffff;
+      font-size: 56px;
+      font-weight: 300;
+      margin-bottom: 20px;
+      letter-spacing: 8px;
+      opacity: 0.9;
+    }
+
+    .welcome-subtitle {
+      color: #6b7280;
+      font-size: 14px;
+      font-weight: 400;
+      margin-bottom: 56px;
+      letter-spacing: 4px;
+      opacity: 0.6;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 32px;
+      margin-bottom: 64px;
+    }
+
+    .stat-card {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 0;
+      padding: 36px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: #3b82f6;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .stat-card:hover::before {
+      opacity: 0.3;
+    }
+
+    .stat-card:hover {
+      background: rgba(59, 130, 246, 0.05);
+      transform: translateY(-4px);
+    }
+
+    .stat-label {
+      color: #6b7280;
+      font-size: 12px;
+      font-weight: 400;
+      margin-bottom: 12px;
+      letter-spacing: 2px;
+      opacity: 0.7;
+    }
+
+    .stat-value {
+      color: #ffffff;
+      font-size: 48px;
+      font-weight: 200;
+      letter-spacing: -4px;
+    }
+
+    .section-title {
+      color: #ffffff;
+      font-size: 18px;
+      font-weight: 300;
+      margin: 64px 0 24px 0;
+      letter-spacing: 4px;
+      opacity: 0.8;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+      margin-bottom: 64px;
+    }
+
+    .info-card {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 0;
+      padding: 28px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+
+    .info-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background: rgba(255,255,255,0.05);
+      transition: background 0.4s ease;
+    }
+
+    .info-card:hover::before {
+      background: #3b82f6;
+    }
+
+    .info-card:hover {
+      background: rgba(59, 130, 246, 0.05);
+      transform: translateY(-4px);
+    }
+
+    .info-card-title {
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: 300;
+      margin-bottom: 12px;
+      letter-spacing: 2px;
+      opacity: 0.9;
+    }
+
+    .info-card-desc {
+      color: #6b7280;
+      font-size: 13px;
+      margin-bottom: 20px;
+      line-height: 1.6;
+      opacity: 0.6;
+    }
+
+    .info-card-meta {
+      color: #4b5563;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 12px;
+      opacity: 0.7;
+    }
+
+    .tag {
+      background: rgba(255,255,255,0.1);
+      color: #ffffff;
+      padding: 6px 16px;
+      border-radius: 0;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 1px;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #10b981;
+      font-size: 11px;
+      font-weight: 400;
+      margin-top: 12px;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      background: #10b981;
+      border-radius: 50%;
+    }
+
+    /* 响应式调整 */
+    @media (max-width: 1200px) {
+      .dot-nav {
+        display: none;
+      }
+      .main-content {
+        padding-left: 60px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 顶部导航栏 -->
+  <header class="header">
+    <div class="brand">
+      <img src="octo_logo.jpg" alt="Octo Logo" class="brand-logo-img" />
+      <div class="brand-text">
+        <span class="brand-slogan">服务知识 · 触手可及</span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <div class="icon-btn">🔔</div>
+      <div class="icon-btn">👤</div>
+    </div>
+  </header>
+
+  <!-- 点阵导航 -->
+  <div class="dot-nav">
+    <div class="nav-line"></div>
+    <div class="nav-dot active">
+      <span class="nav-label">仪表盘</span>
+    </div>
+    <div class="nav-dot">
+      <span class="nav-label">服务知识</span>
+    </div>
+    <div class="nav-dot">
+      <span class="nav-label">设计空间</span>
+    </div>
+  </div>
+
+  <!-- 主内容区 -->
+  <div class="layout">
+    <main class="main-content">
+      <!-- 内容区 -->
+      <div class="content">
+        <h1 class="page-title">欢迎回来</h1>
+        <p class="welcome-subtitle">极简美学 · 极致体验</p>
+
+        <!-- 统计卡片 -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">设计空间</div>
+            <div class="stat-value">5</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">服务知识</div>
+            <div class="stat-value">23</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">历史设计</div>
+            <div class="stat-value">15</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">个人模板</div>
+            <div class="stat-value">3</div>
+          </div>
+        </div>
+
+        <!-- 快速入口 -->
+        <h2 class="section-title">快速开始</h2>
+
+        <div class="card-grid">
+          <div class="info-card">
+            <div class="info-card-title">创建设计空间</div>
+            <div class="info-card-desc">为新的设计项目创建一个干净的工作空间</div>
+            <div class="info-card-meta">
+              <span class="tag">快速开始</span>
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-title">添加服务知识</div>
+            <div class="info-card-desc">将分析后的服务知识录入系统</div>
+            <div class="info-card-meta">
+              <span class="tag">数据导入</span>
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-title">查看设计历史</div>
+            <div class="info-card-desc">浏览之前的设计方案，获取灵感和参考</div>
+            <div class="info-card-meta">
+              <span class="status-badge">
+                <span class="status-dot"></span>
+                最近更新
+              </span>
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-title">访问技能管理</div>
+            <div class="info-card-desc">点阵哲学 · 触手可及</div>
+            <div class="info-card-meta">
+              <span class="tag">设置</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 最近活动 -->
+        <h2 class="section-title">最近更新</h2>
+
+        <div class="card-grid">
+          <div class="info-card">
+            <div class="info-card-title">user-service</div>
+            <div class="info-card-desc">用户服务 · 用户认证和授权</div>
+            <div class="info-card-meta">
+              <span class="tag">已发布</span>
+              <span>v1.0.0</span>
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-title">order-service</div>
+            <div class="info-card-desc">订单服务 · 订单管理功能</div>
+            <div class="info-card-meta">
+              <span class="tag">已发布</span>
+              <span>v1.2.0</span>
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-title">payment-service</div>
+            <div class="info-card-desc">支付服务 · 支付接口集成</div>
+            <div class="info-card-meta">
+              <span class="tag">草稿</span>
+              <span>v0.1.0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    document.querySelectorAll('.nav-dot').forEach(item => {
+      item.addEventListener('click', function() {
+        document.querySelectorAll('.nav-dot').forEach(i => i.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>
