@@ -91,15 +91,27 @@
 
     .brand {
       display: flex;
-      align-items: baseline;
+      align-items: center;
       gap: 20px;
+    }
+
+    .brand-logo-img {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
     }
 
     .brand-logo {
       color: #1a1a1a;
-      font-size: 26px;
+      font-size: 20px;
       font-weight: 700;
       letter-spacing: 2px;
+      line-height: 1.2;
     }
 
     .brand-slogan {
@@ -425,8 +437,11 @@
     <div class="header-left">
       <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
       <div class="brand">
-        <span class="brand-logo">Octo</span>
-        <span class="brand-slogan">服务知识，触手可及</span>
+        <img src="octo_logo.jpg" alt="Octo Logo" class="brand-logo-img" />
+        <div class="brand-text">
+          <span class="brand-logo">Octo</span>
+          <span class="brand-slogan">服务知识，触手可及</span>
+        </div>
       </div>
     </div>
     <div class="header-actions">
