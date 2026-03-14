@@ -7,6 +7,7 @@ import './Dock.css'
  */
 const Dock = ({ currentPage, onPageChange }) => {
   const [hoveredMenu, setHoveredMenu] = useState(null)
+  const menuTimeoutRef = React.useRef(null)
 
   // Menu items configuration
   const menuItems = [
@@ -70,11 +71,49 @@ const Dock = ({ currentPage, onPageChange }) => {
     onPageChange(menuItem.key)
   }
 
+  // Handle menu item mouse enter
+  const handleMenuMouseEnter = (menuItem) => {
+    // Clear any existing timeout
+    if (menuTimeoutRef.current) {
+      clearTimeout(menuTimeoutRef.current)
+    }
+    setHoveredMenu(menuItem.key)
+  }
+
+  // Handle menu item mouse leave
+  const handleMenuMouseLeave = () => {
+    // Delay hiding to allow mouse to move to submenu
+    menuTimeoutRef.current = setTimeout(() => {
+      setHoveredMenu(null)
+    }, 200) // 200ms delay
+  }
+
   // Handle submenu item click
   const handleSubmenuClick = (submenuKey, e) => {
     e.stopPropagation() // Prevent parent menu click
     onPageChange(submenuKey)
+    // Clear timeout when submenu item is clicked
+    if (menuTimeoutRef.current) {
+      clearTimeout(menuTimeoutRef.current)
+    }
   }
+
+  // Handle submenu item mouse enter
+  const handleSubmenuMouseEnter = () => {
+    // Keep menu visible when mouse is on submenu
+    if (menuTimeoutRef.current) {
+      clearTimeout(menuTimeoutRef.current)
+    }
+  }
+
+  // Cleanup timeout on unmount
+  React.useEffect(() => {
+    return () => {
+      if (menuTimeoutRef.current) {
+        clearTimeout(menuTimeoutRef.current)
+      }
+    }
+  }, [])
 
   return (
     <div className="dock">
@@ -82,8 +121,8 @@ const Dock = ({ currentPage, onPageChange }) => {
         <div
           key={menuItem.key}
           className={`dock-item ${menuItem.hasSubmenu ? 'has-submenu' : ''} ${currentPage === menuItem.key ? 'active' : ''}`}
-          onMouseEnter={() => setHoveredMenu(menuItem.key)}
-          onMouseLeave={() => setHoveredMenu(null)}
+          onMouseEnter={() => handleMenuMouseEnter(menuItem)}
+          onMouseLeave={handleMenuMouseLeave}
           onClick={() => handleMenuClick(menuItem)}
         >
           {/* Icon */}
@@ -107,6 +146,7 @@ const Dock = ({ currentPage, onPageChange }) => {
                         : 'translate(0px, 0px)',
                     }}
                     onClick={(e) => handleSubmenuClick(subItem.key, e)}
+                    onMouseEnter={handleSubmenuMouseEnter}
                   >
                     <div className="dock-fan-icon">{subItem.icon}</div>
                     <div className="dock-fan-label">{subItem.label}</div>

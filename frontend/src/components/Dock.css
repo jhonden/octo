@@ -152,6 +152,15 @@
   transform: translateX(-50%);
   pointer-events: none;
   z-index: 1001;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* Show fan menu when hovering parent menu */
+.dock-item.has-submenu:hover .dock-fan-menu {
+  opacity: 1;
+  visibility: visible;
 }
 
 /* Fan submenu items */
@@ -172,7 +181,15 @@
   opacity: 0;
   visibility: hidden;
   transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  pointer-events: none;
+}
+
+/* Show fan items when parent menu is hovered */
+.dock-item.has-submenu:hover .dock-fan-item {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
   box-shadow:
     0 4px 20px rgba(0, 0, 0, 0.3),
     0 2px 8px rgba(59, 130, 246, 0.1);
