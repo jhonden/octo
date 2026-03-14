@@ -85,7 +85,7 @@ const Dock = ({ currentPage, onPageChange }) => {
     // Delay hiding to allow mouse to move to submenu
     menuTimeoutRef.current = setTimeout(() => {
       setHoveredMenu(null)
-    }, 200) // 200ms delay
+    }, 400) // 400ms delay
   }
 
   // Handle submenu item click
