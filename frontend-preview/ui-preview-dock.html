@@ -54,7 +54,9 @@
       align-items: center;
       justify-content: space-between;
       z-index: 100;
-      background: transparent;
+      background: rgba(13, 26, 33, 0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     .brand {
@@ -118,10 +120,12 @@
     /* 主内容区 */
     .main-content {
       flex: 1;
-      padding: 60px 60px 60px 100px 120px;
+      padding: 80px 60px 60px 120px 100px;
       overflow-y: auto;
       height: calc(100vh - 70px);
       position: relative;
+      max-width: 1600px;
+      margin: 0 auto;
     }
 
     /* 底部 Dock 导航 */
