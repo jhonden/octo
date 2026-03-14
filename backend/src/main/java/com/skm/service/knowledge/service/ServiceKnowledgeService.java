@@ -45,7 +45,7 @@ public class ServiceKnowledgeService {
   }
 
   @Transactional
-  public ServiceKnowledge create(Map<String, Object> data) throws JsonProcessingException {
+  public ServiceKnowledge create(Map<String, Object> data) {
     String serviceName = (String) data.get("serviceName");
     if (serviceName == null || serviceName.isEmpty()) {
       throw new IllegalArgumentException("serviceName is required");
@@ -55,17 +55,25 @@ public class ServiceKnowledgeService {
     sk.setServiceName(serviceName);
     sk.setVersion((String) data.getOrDefault("version", null));
     sk.setStatus((String) data.getOrDefault("status", "draft"));
-    sk.setKnowledge(objectMapper.writeValueAsString(data));
+    try {
+      sk.setKnowledge(objectMapper.writeValueAsString(data));
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException("Failed to serialize knowledge data", e);
+    }
 
     return repository.save(sk);
   }
 
   @Transactional
-  public ServiceKnowledge update(Long id, Map<String, Object> data) throws JsonProcessingException {
+  public ServiceKnowledge update(Long id, Map<String, Object> data) {
     ServiceKnowledge sk = getById(id);
     sk.setVersion((String) data.get("version"));
     sk.setStatus((String) data.get("status"));
-    sk.setKnowledge(objectMapper.writeValueAsString(data));
+    try {
+      sk.setKnowledge(objectMapper.writeValueAsString(data));
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException("Failed to serialize knowledge data", e);
+    }
 
     return repository.save(sk);
   }

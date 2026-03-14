@@ -1,6 +1,5 @@
 package com.skm.service.knowledge.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skm.service.knowledge.dto.ServiceKnowledgeRequest;
 import com.skm.service.knowledge.dto.ServiceKnowledgeResponse;
@@ -56,35 +55,27 @@ public class ServiceKnowledgeController {
 
   @PostMapping
   public ServiceKnowledgeResponse create(@RequestBody ServiceKnowledgeRequest request) {
-    try {
-      Map<String, Object> data = new java.util.HashMap<>();
-      data.put("serviceName", request.getServiceName());
-      data.put("version", request.getVersion());
-      data.put("status", request.getStatus());
-      if (request.getKnowledge() != null) {
-        data.put("knowledge", request.getKnowledge());
-      }
-      return ServiceKnowledgeResponse.fromEntity(service.create(data), objectMapper);
-    } catch (JsonProcessingException e) {
-      throw new RuntimeException("Failed to process JSON: " + e.getMessage(), e);
+    Map<String, Object> data = new java.util.HashMap<>();
+    data.put("serviceName", request.getServiceName());
+    data.put("version", request.getVersion());
+    data.put("status", request.getStatus());
+    if (request.getKnowledge() != null) {
+      data.put("knowledge", request.getKnowledge());
     }
+    return ServiceKnowledgeResponse.fromEntity(service.create(data), objectMapper);
   }
 
   @PutMapping("/{id}")
   public ServiceKnowledgeResponse update(
       @PathVariable Long id,
       @RequestBody ServiceKnowledgeRequest request) {
-    try {
-      Map<String, Object> data = new java.util.HashMap<>();
-      data.put("version", request.getVersion());
-      data.put("status", request.getStatus());
-      if (request.getKnowledge() != null) {
-        data.put("knowledge", request.getKnowledge());
-      }
-      return ServiceKnowledgeResponse.fromEntity(service.update(id, data), objectMapper);
-    } catch (JsonProcessingException e) {
-      throw new RuntimeException("Failed to process JSON: " + e.getMessage(), e);
+    Map<String, Object> data = new java.util.HashMap<>();
+    data.put("version", request.getVersion());
+    data.put("status", request.getStatus());
+    if (request.getKnowledge() != null) {
+      data.put("knowledge", request.getKnowledge());
     }
+    return ServiceKnowledgeResponse.fromEntity(service.update(id, data), objectMapper);
   }
 
   @DeleteMapping("/{id}")
