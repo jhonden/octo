@@ -8,17 +8,17 @@ import './WindowContainer.css'
  * 窗口组件
  * 渲染单个可拖拽、可最大化的窗口
  */
-const Window = ({ window, isActive, onClose, onMaximize, onRestore, onMinimize, onMouseDown }) => {
+const Window = ({ windowData, isActive, onClose, onMaximize, onRestore, onMinimize, onMouseDown }) => {
   const { updateWindowPosition } = useWindowManager()
 
   // 窗口拖拽状态
   const [isDragging, setIsDragging] = React.useState(false)
   const [dragStart, setDragStart] = React.useState({ x: 0, y: 0 })
-  const [windowPosition, setWindowPosition] = React.useState(window.position)
+  const [windowPosition, setWindowPosition] = React.useState(windowData.position)
 
   // 处理拖拽开始
   const handleDragStart = (e) => {
-    if (window.isMaximized) return // 最大化时不允许拖拽
+    if (windowData.isMaximized) return // 最大化时不允许拖拽
 
     setIsDragging(true)
     setDragStart({
@@ -29,7 +29,7 @@ const Window = ({ window, isActive, onClose, onMaximize, onRestore, onMinimize, 
 
   // 处理拖拽中
   const handleDragMove = (e) => {
-    if (!isDragging || window.isMaximized) return
+    if (!isDragging || windowData.isMaximized) return
 
     const newX = e.clientX - dragStart.x
     const newY = e.clientY - dragStart.y
@@ -39,36 +39,38 @@ const Window = ({ window, isActive, onClose, onMaximize, onRestore, onMinimize, 
 
   // 处理拖拽结束
   const handleDragEnd = () => {
-    if (!isDragging || window.isMaximized) return
+    if (!isDragging || windowData.isMaximized) return
 
     setIsDragging(false)
-    updateWindowPosition(window.id, windowPosition.x, windowPosition.y)
+    updateWindowPosition(windowData.id, windowPosition.x, windowPosition.y)
   }
 
   // 全局监听鼠标移动和释放
   React.useEffect(() => {
     if (isDragging) {
-      window.addEventListener('mousemove', handleDragMove)
-      window.addEventListener('mouseup', handleDragEnd)
+      // 使用浏览器的全局 window 对象
+      const browserWindow = window
+      browserWindow.addEventListener('mousemove', handleDragMove)
+      browserWindow.addEventListener('mouseup', handleDragEnd)
       return () => {
-        window.removeEventListener('mousemove', handleDragMove)
-        window.removeEventListener('mouseup', handleDragEnd)
+        browserWindow.removeEventListener('mousemove', handleDragMove)
+        browserWindow.removeEventListener('mouseup', handleDragEnd)
       }
     }
   }, [isDragging, windowPosition, dragStart])
 
   // 窗口样式
   const windowStyle = {
-    left: window.isMaximized ? 0 : `${windowPosition.x}px`,
-    top: window.isMaximized ? 0 : `${windowPosition.y}px`,
-    width: window.isMaximized ? '100%' : '1200px',
-    height: window.isMaximized ? '100%' : '800px',
+    left: windowData.isMaximized ? 0 : `${windowPosition.x}px`,
+    top: windowData.isMaximized ? 0 : `${windowPosition.y}px`,
+    width: windowData.isMaximized ? '100%' : '1200px',
+    height: windowData.isMaximized ? '100%' : '800px',
     zIndex: isActive ? 100 : 50,
   }
 
   // 渲染窗口内容组件
   const renderContent = () => {
-    switch (window.id) {
+    switch (windowData.id) {
       case 'services':
         return <ServiceKnowledge />
       case 'dashboard':
@@ -78,8 +80,8 @@ const Window = ({ window, isActive, onClose, onMaximize, onRestore, onMinimize, 
       default:
         return (
           <div style={{ padding: '24px' }}>
-            <h1>{window.title}</h1>
-            <p>当前窗口: {window.id}</p>
+            <h1>{windowData.title}</h1>
+            <p>当前窗口: {windowData.id}</p>
             <p>这个功能正在开发中...</p>
           </div>
         )
@@ -89,7 +91,7 @@ const Window = ({ window, isActive, onClose, onMaximize, onRestore, onMinimize, 
   return (
     <div
       className={`window ${isActive ? 'window-active' : ''} ${
-        window.isMaximized ? 'window-maximized' : ''
+        windowData.isMaximized ? 'window-maximized' : ''
       }`}
       style={windowStyle}
       onMouseDown={onMouseDown}
@@ -98,24 +100,24 @@ const Window = ({ window, isActive, onClose, onMaximize, onRestore, onMinimize, 
       <div
         className="window-header"
         onMouseDown={handleDragStart}
-        style={{ cursor: window.isMaximized ? 'default' : 'move' }}
+        style={{ cursor: windowData.isMaximized ? 'default' : 'move' }}
       >
         <div className="window-title">
-          <span className="window-title-icon">{window.icon}</span>
-          <span>{window.title}</span>
+          <span className="window-title-icon">{windowData.icon}</span>
+          <span>{windowData.title}</span>
         </div>
         <div className="window-controls">
           <button
             className="window-control window-control-minimize"
-            onClick={() => onMinimize(window.id)}
+            onClick={() => onMinimize(windowData.id)}
             title="最小化"
           >
             <span>−</span>
           </button>
-          {window.isMaximized ? (
+          {windowData.isMaximized ? (
             <button
               className="window-control window-control-restore"
-              onClick={() => onRestore(window.id)}
+              onClick={() => onRestore(windowData.id)}
               title="恢复"
             >
               <span>◻</span>
@@ -123,7 +125,7 @@ const Window = ({ window, isActive, onClose, onMaximize, onRestore, onMinimize, 
           ) : (
             <button
               className="window-control window-control-maximize"
-              onClick={() => onMaximize(window.id)}
+              onClick={() => onMaximize(windowData.id)}
               title="最大化"
             >
               <span>□</span>
@@ -131,7 +133,7 @@ const Window = ({ window, isActive, onClose, onMaximize, onRestore, onMinimize, 
           )}
           <button
             className="window-control window-control-close"
-            onClick={() => onClose(window.id)}
+            onClick={() => onClose(windowData.id)}
             title="关闭"
           >
             <span>✕</span>
@@ -162,8 +164,8 @@ const WindowContainer = () => {
     switchToWindow,
   } = useWindowManager()
 
-  // 获取所有打开的窗口
-  const openWindows = windows.filter(w => w.isOpen)
+  // 获取所有打开且未最小化的窗口
+  const openWindows = windows.filter(w => w.isOpen && !w.isMinimized)
 
   if (openWindows.length === 0) {
     return null // 没有打开的窗口
@@ -172,16 +174,16 @@ const WindowContainer = () => {
   // 使用Portal将窗口渲染到document.body
   return createPortal(
     <div className="window-container">
-      {openWindows.map(window => (
+      {openWindows.map(windowData => (
         <Window
-          key={window.id}
-          window={window}
-          isActive={window.id === activeWindowId}
+          key={windowData.id}
+          windowData={windowData}
+          isActive={windowData.id === activeWindowId}
           onClose={closeWindow}
           onMaximize={maximizeWindow}
           onRestore={restoreWindow}
           onMinimize={minimizeWindow}
-          onMouseDown={() => switchToWindow(window.id)}
+          onMouseDown={() => switchToWindow(windowData.id)}
         />
       ))}
     </div>,

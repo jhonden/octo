@@ -9,7 +9,7 @@ const WindowManagerContext = createContext(null)
  */
 export const WindowManagerProvider = ({ children }) => {
   // 窗口状态定义
-  // 每个窗口包含：id, title, component, isOpen, isMaximized, position, size
+  // 每个窗口包含：id, title, component, isOpen, isMaximized, isMinimized, position, size
   const [windows, setWindows] = useState([
     {
       id: 'dashboard',
@@ -18,6 +18,7 @@ export const WindowManagerProvider = ({ children }) => {
       component: null, // 仪表盘使用默认内容
       isOpen: false,
       isMaximized: false,
+      isMinimized: false,
       position: { x: 50, y: 50 },
       size: 'normal',
     },
@@ -28,6 +29,7 @@ export const WindowManagerProvider = ({ children }) => {
       component: null, // 动态导入
       isOpen: false,
       isMaximized: false,
+      isMinimized: false,
       position: { x: 100, y: 100 },
       size: 'normal',
     },
@@ -38,6 +40,7 @@ export const WindowManagerProvider = ({ children }) => {
       component: null,
       isOpen: false,
       isMaximized: false,
+      isMinimized: false,
       position: { x: 150, y: 150 },
       size: 'normal',
     },
@@ -48,6 +51,7 @@ export const WindowManagerProvider = ({ children }) => {
       component: null,
       isOpen: false,
       isMaximized: false,
+      isMinimized: false,
       position: { x: 200, y: 200 },
       size: 'normal',
     },
@@ -58,6 +62,7 @@ export const WindowManagerProvider = ({ children }) => {
       component: null,
       isOpen: false,
       isMaximized: false,
+      isMinimized: false,
       position: { x: 250, y: 250 },
       size: 'normal',
     },
@@ -76,7 +81,9 @@ export const WindowManagerProvider = ({ children }) => {
   const openWindow = (windowId) => {
     setWindows(prev =>
       prev.map(w =>
-        w.id === windowId ? { ...w, isOpen: true } : w
+        w.id === windowId
+          ? { ...w, isOpen: true, isMinimized: false }
+          : w
       )
     )
     setActiveWindowId(windowId)
@@ -90,7 +97,7 @@ export const WindowManagerProvider = ({ children }) => {
     setWindows(prev =>
       prev.map(w =>
         w.id === windowId
-          ? { ...w, isOpen: false, isMaximized: false, size: 'normal' }
+          ? { ...w, isOpen: false, isMaximized: false, isMinimized: false, size: 'normal' }
           : w
       )
     )
@@ -119,14 +126,14 @@ export const WindowManagerProvider = ({ children }) => {
     setWindows(prev =>
       prev.map(w =>
         w.id === windowId
-          ? { ...w, isOpen: false, isMaximized: false, size: 'minimized' }
+          ? { ...w, isMaximized: false, isMinimized: true, size: 'minimized' }
           : w
       )
     )
 
     if (activeWindowId === windowId) {
       const otherOpenWindows = windows.filter(
-        w => w.id !== windowId && w.isOpen
+        w => w.id !== windowId && w.isOpen && !w.isMinimized
       )
       if (otherOpenWindows.length > 0) {
         setActiveWindowId(otherOpenWindows[0].id)
@@ -155,14 +162,14 @@ export const WindowManagerProvider = ({ children }) => {
   }
 
   /**
-   * 恢复指定窗口（从最大化到正常）
+   * 恢复指定窗口（从最大化或最小化到正常）
    * @param {string} windowId - 窗口ID
    */
   const restoreWindow = (windowId) => {
     setWindows(prev =>
       prev.map(w =>
         w.id === windowId
-          ? { ...w, isMaximized: false, size: 'normal' }
+          ? { ...w, isMaximized: false, isMinimized: false, size: 'normal' }
           : w
       )
     )
@@ -178,6 +185,10 @@ export const WindowManagerProvider = ({ children }) => {
     const window = windows.find(w => w.id === windowId)
     if (!window.isOpen) {
       openWindow(windowId)
+    } else if (window.isMinimized) {
+      // 如果窗口已最小化，恢复它
+      restoreWindow(windowId)
+      setActiveWindowId(windowId)
     } else {
       setActiveWindowId(windowId)
     }
