@@ -100,24 +100,26 @@ const Dock = ({ currentPage, onPageChange }) => {
               >
                 <div className="dock-fan-menu">
                   {menuItem.submenu.map((subItem, index) => {
-                const { x, y } = calculateFanPosition(index, menuItem.submenu.length)
-                return (
-                  <div
-                    key={subItem.key}
-                    className={`dock-fan-item ${currentPage === subItem.key ? 'active' : ''}`}
-                    style={{
-                      transform: hoveredMenu === menuItem.key
-                        ? `translate(${x}px, ${y}px)`
-                        : 'translate(0px, 0px)',
-                    }}
-                    onClick={(e) => handleSubmenuClick(subItem.key, e)}
-                  >
-                    <div className="dock-fan-icon">{subItem.icon}</div>
-                    <div className="dock-fan-label">{subItem.label}</div>
-                  </div>
-                )
-              })}
-            </div>
+                    const { x, y } = calculateFanPosition(index, menuItem.submenu.length)
+                    return (
+                      <div
+                        key={subItem.key}
+                        className={`dock-fan-item ${currentPage === subItem.key ? 'active' : ''}`}
+                        style={{
+                          transform: hoveredMenu === menuItem.key
+                            ? `translate(${x}px, ${y}px)`
+                            : 'translate(0px, 0px)',
+                        }}
+                        onClick={(e) => handleSubmenuClick(subItem.key, e)}
+                      >
+                        <div className="dock-fan-icon">{subItem.icon}</div>
+                        <div className="dock-fan-label">{subItem.label}</div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            </>
           )}
         </div>
       ))}
