@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Octo - 主页预览（中性灰阶层次）</title>
+  <style>
+    /* 全局样式重置 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      background: #f0f0f0;
+      color: #1f1f1f;
+      min-height: 100vh;
+    }
+
+    /* 滚动条样式 */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #e8e8e8;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #d1d5db;
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #b3b3b3;
+    }
+
+    /* 布局 */
+    .layout {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .main-layout {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* 顶部导航栏 */
+    .header {
+      background: #fafbfb;
+      border-bottom: 1px solid #d1d5db;
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toggle-btn:hover {
+      color: #1a1a1a;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo-img {
+      width: 48px;
+      height: 48px;
+      object-fit: cover;
+      object-position: center center;
+      border-radius: 8px;
+      padding: 0;
+      margin: 0;
+      transform: scale(1.2);
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-logo {
+      display: none;
+      color: #1a1a1a;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      line-height: 1.2;
+    }
+
+    .brand-slogan {
+      color: #6b7280;
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: 1px;
+      position: relative;
+      padding-left: 16px;
+    }
+
+    .brand-slogan::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 1px;
+      height: 20px;
+      background: linear-gradient(to bottom, transparent, #d1d5db, transparent);
+    }
+
+    /* 侧边栏 */
+    .sidebar {
+      width: 260px;
+      background: #e8e8e8;
+      border-right: 1px solid #d1d5db;
+      display: flex;
+      flex-direction: column;
+      margin-top: 64px;
+      height: calc(100vh - 64px);
+      overflow-y: auto;
+      transition: width 0.3s ease;
+    }
+
+    .sidebar.collapsed {
+      width: 72px;
+    }
+
+    .sidebar-toggle {
+      width: 100%;
+      padding: 16px;
+      border-top: 1px solid #d1d5db;
+      background: #e8e8e8;
+      border: none;
+      cursor: pointer;
+      font-size: 20px;
+      color: #5f6368;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sidebar-toggle:hover {
+      background: #d1d5db;
+      color: #1a1a1a;
+    }
+
+    .menu {
+      flex: 1;
+      padding: 0 24px;
+    }
+
+    .sidebar.collapsed .menu {
+      padding: 0 24px;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      color: #5f6368;
+      padding: 14px 20px;
+      border-radius: 6px;
+      margin: 4px 0;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .sidebar.collapsed .menu-item {
+      padding: 14px 0;
+      justify-content: center;
+    }
+
+    .menu-item:hover {
+      background: #e8e8e8;
+      color: #1a1a1a;
+    }
+
+    .menu-item.active {
+      background: #d1d5db;
+      color: #1a1a1a;
+      border-left: 3px solid #1a1a1a;
+      font-weight: 600;
+    }
+
+    .menu-icon {
+      font-size: 18px;
+      margin-right: 12px;
+      transition: all 0.2s ease;
+    }
+
+    .sidebar.collapsed .menu-icon {
+      margin-right: 0;
+      font-size: 24px;
+    }
+
+    .menu-text {
+      font-size: 14px;
+      font-weight: 500;
+      transition: opacity 0.2s ease;
+    }
+
+    .sidebar.collapsed .menu-text {
+      opacity: 0;
+      width: 0;
+      display: none;
+    }
+
+    /* 主内容区 */
+    .main-content {
+      flex: 1;
+      background: #fafafa;
+      display: flex;
+      flex-direction: column;
+      margin-top: 64px;
+      overflow-y: auto;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .icon-btn {
+      border: 1px solid #d1d5db;
+      color: #5f6368;
+      width: 36px;
+      height: 36px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .icon-btn:hover {
+      border-color: #1a1a1a;
+      background: #fafafa;
+    }
+
+    /* 内容区 */
+    .content {
+      padding: 40px;
+      background: #fafafa;
+      flex: 1;
+    overflow-y: auto;
+    }
+
+    .page-title {
+      color: #1a1a1a;
+      font-size: 40px;
+      font-weight: 600;
+      margin-bottom: 48px;
+      letter-spacing: -0.5px;
+    }
+
+    .welcome-subtitle {
+      color: #6b7280;
+      font-size: 16px;
+      font-weight: 500;
+      margin-top: 8px;
+    letter-spacing: 0.5px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      margin-bottom: 48px;
+    }
+
+    .stat-card {
+      background: #fafbfb;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      padding: 32px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .stat-label {
+      color: #6b7280;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      color: #1a1a1a;
+      font-size: 42px;
+      font-weight: 600;
+      margin-bottom: 0;
+      letter-spacing: -0.5px;
+    }
+
+    .section-title {
+      color: #1a1a1a;
+      font-size: 20px;
+      font-weight: 600;
+      margin: 64px 0 32px 0;
+      letter-spacing: -0.5px;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-bottom: 48px;
+    }
+
+    .info-card {
+      background: #fafbfb;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      transition: all 0.3s ease;
+    }
+
+    .info-card-title {
+      color: #1a1a1a;
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .info-card-desc {
+      color: #6b7280;
+      font-size: 14px;
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+
+    .info-card-meta {
+      color: #9ca3af;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .tag {
+      background: #d1fae5;
+      color: #065f46;
+      padding: 6px 14px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #059669;
+      font-size: 13px;
+      font-weight: 500;
+      margin-top: 8px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #10b981;
+      border-radius: 50%;
+    }
+
+    /* 主按钮样式 */
+    .primary-btn {
+      background: #1a1a1a;
+      border: none;
+      color: #ffffff;
+      padding: 12px 28px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-block;
+      margin-bottom: 24px;
+    }
+
+    .primary-btn:hover {
+      background: #1a1a1a;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    /* 装饰元素 */
+    .decoration-line {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, #1a1a1a 0%, transparent);
+      margin: 40px 0 32px 0;
+    }
+
+    /* 图标大小 */
+    .icon-lg {
+      font-size: 24px;
+    margin-right: 14px;
+    }
+
+    /* 响应式调整 */
+    @media (max-width: 1200px) {
+      .sidebar {
+        display: none;
+      }
+
+      .stats-grid,
+      .card-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .page-title {
+        font-size: 32px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 顶部导航栏 -->
+  <header class="header">
+    <div class="header-left">
+      <div class="brand">
+        <img src="octo_logo.jpg" alt="Octo Logo" class="brand-logo-img" />
+        <div class="brand-text">
+          <span class="brand-logo">Octo</span>
+          <span class="brand-slogan">服务知识，触手可及</span>
+        </div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <div class="icon-btn">🔔</div>
+      <div class="icon-btn">👤</div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <div class="main-layout">
+      <!-- 侧边栏 -->
+      <aside class="sidebar" id="sidebar">
+        <nav class="menu">
+          <div class="menu-item active">
+            <span class="menu-icon">📊</span>
+            <span class="menu-text">仪表盘</span>
+          </div>
+          <div class="menu-item">
+            <span class="menu-icon">📚</span>
+            <span class="menu-text">服务知识</span>
+          </div>
+          <div class="menu-item">
+            <span class="menu-icon">💼</span>
+            <span class="menu-text">设计空间</span>
+          </div>
+        </nav>
+        <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+      </aside>
+
+      <!-- 主内容区 -->
+      <main class="main-content">
+      <div class="content">
+        <h1 class="page-title">欢迎回来，架构师</h1>
+        <p class="welcome-subtitle">开始你的创作之旅</p1>
+
+        <!-- 统计卡片 -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">设计空间</div>
+            <div class="stat-value">5</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">服务知识</div>
+            <div class="stat-value">23</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">历史设计</div>
+            <div class="stat-value">15</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">个人模板</div>
+            <div class="stat-value">3</div>
+          </div>
+        </div>
+
+        <!-- 装饰线 -->
+        <div class="decoration-line"></div>
+
+        <!-- 快速入口 -->
+        <h2 class="section-title">快速开始</h2>
+
+        <div class="card-grid">
+          <div class="info-card">
+            <div class="info-card-title">创建设计空间</div>
+            <div class="info-card-desc">为新的设计项目创建一个干净的工作空间</div>
+            <div class="info-card-meta">
+              <span class="tag">快速开始</span>
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-title">添加服务知识</div>
+            <div class="info-card-desc">将分析后的服务知识录入系统</div>
+            <div class="info-card-meta">
+              <span class="tag">数据导入</span>
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-title">查看设计历史</div>
+            <div class="info-card-desc">浏览之前的设计方案，获取灵感和参考</div>
+            <div class="info-card-meta">
+              <span class="status-badge">
+                <span class="status-dot"></span>
+                最近更新
+              </span>
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-title">访问技能管理</div>
+            <div class="info-card-desc">配置和管理 Claude Skills，定制你的工作流程</div>
+            <div class="info-card-meta">
+              <span class="tag">设置</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 棕饰线 -->
+        <div class="decoration-line"></div>
+
+        <!-- 最近活动 -->
+        <h2 class="section-title">最近更新</h2>
+
+        <div class="card-grid">
+          <div class="info-card">
+            <div class="info-card-title">user-service</div>
+            <div class="info-card-desc">用户服务 - 用户认证和授权</div>
+            <div class="info-card-meta">
+              <span class="tag">已发布</span>
+              <span>v1.0.0</span>
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-title">order-service</div>
+            <div class="info-card-desc">订单服务 - 订单管理功能</div>
+            <div class="info-card-meta">
+              <span class="tag">已发布</span>
+              <span>v1.2.0</span>
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-title">payment-service</div>
+            <div class="info-card-desc">支付服务 - 支付接口集成</div>
+            <div class="info-card-meta">
+              <span class="tag">草稿</span>
+              <span>v0.1.0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    </div>
+  </div>
+
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('collapsed');
+    }
+  </script>
+</body>
+</html>
