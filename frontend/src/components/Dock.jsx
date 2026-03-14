@@ -1,124 +1,46 @@
-import React, { useState } from 'react'
+import React from 'react'
+import { useWindowManager } from './WindowManagerContext'
 import './Dock.css'
 
 /**
  * Dock Navigation Component
- * Mac OS-style dock with fan-shaped sub-menus
+ * Mac OS-style dock，支持窗口内外两种定位模式
+ * 正常模式：固定在窗口底部
+ * 最大化模式：移到窗口外（bottom: -60px），z-index最高
  */
-const Dock = ({ currentPage, onPageChange }) => {
-  const [hoveredMenu, setHoveredMenu] = useState(null)
+const Dock = () => {
+  const { windows, openWindow, closeWindow, isAnyWindowMaximized } = useWindowManager()
 
-  // Menu items configuration
-  const menuItems = [
-    {
-      key: 'dashboard',
-      icon: '📊',
-      label: '仪表盘',
-    },
-    {
-      key: 'services',
-      icon: '📚',
-      label: '服务知识',
-      hasSubmenu: true,
-      submenu: [
-        { key: 'services-list', icon: '📋', label: '服务列表' },
-        { key: 'services-topology', icon: '🕸️', label: '服务拓扑' },
-        { key: 'services-dependency', icon: '🔗', label: '依赖分析' },
-        { key: 'services-search', icon: '🔍', label: '服务搜索' },
-      ],
-    },
-    {
-      key: 'spaces',
-      icon: '💼',
-      label: '设计空间',
-    },
-    {
-      key: 'skills',
-      icon: '⚙️',
-      label: '技能管理',
-    },
-    {
-      key: 'mcp',
-      icon: '🔌',
-      label: 'MCP 集成',
-    },
-  ]
-
-  // Calculate fan position for submenu items
-  const calculateFanPosition = (index, totalItems) => {
-    const fanRadius = 100 // Distance from parent menu
-    const fanAngle = 120 // Total spread angle in degrees
-    const startAngle = -60 // Start angle in degrees (from vertical up)
-
-    // Calculate angle for this item
-    const angle = startAngle + (index * (fanAngle / (totalItems - 1)))
-
-    // Convert to radians and calculate position
-    const radians = (angle * Math.PI) / 180
-    const x = Math.sin(radians) * fanRadius
-    const y = -Math.cos(radians) * fanRadius // Negative for upward direction
-
-    return { x, y, angle }
-  }
-
-  // Handle menu item click
-  const handleMenuClick = (menuItem) => {
-    if (menuItem.hasSubmenu) {
-      // Don't change page for items with submenus
-      return
+  // 处理菜单项点击 - 打开/关闭窗口
+  const handleMenuClick = (windowId) => {
+    const window = windows.find(w => w.id === windowId)
+    if (window.isOpen) {
+      // 窗口已打开，切换到该窗口
+      if (window.isMaximized) {
+        // 如果已最大化，不做任何操作
+        return
+      }
+      // 否则切换到该窗口（激活）
+      // window is already open and active
+    } else {
+      // 窗口未打开，打开窗口
+      openWindow(windowId)
     }
-    onPageChange(menuItem.key)
-  }
-
-  // Handle submenu item click
-  const handleSubmenuClick = (submenuKey, e) => {
-    e.stopPropagation() // Prevent parent menu click
-    onPageChange(submenuKey)
   }
 
   return (
-    <div className="dock">
-      {menuItems.map((menuItem) => (
+    <div className={`dock ${isAnyWindowMaximized ? 'dock-maximized' : ''}`}>
+      {windows.map((window) => (
         <div
-          key={menuItem.key}
-          className={`dock-item ${menuItem.hasSubmenu ? 'has-submenu' : ''} ${currentPage === menuItem.key ? 'active' : ''}`}
-          onClick={() => handleMenuClick(menuItem)}
+          key={window.id}
+          className={`dock-item ${window.isOpen ? 'active' : ''}`}
+          onClick={() => handleMenuClick(window.id)}
         >
           {/* Icon */}
-          <div className="dock-icon">{menuItem.icon}</div>
+          <div className="dock-icon">{window.icon}</div>
 
           {/* Label */}
-          <div className="dock-label">{menuItem.label}</div>
-
-          {/* Fan-shaped submenu */}
-          {menuItem.hasSubmenu && menuItem.submenu && (
-            <>
-              {/* Invisible backdrop to prevent menu from disappearing */}
-              <div
-                className="dock-fan-backdrop"
-                onMouseLeave={() => setHoveredMenu(null)}
-              >
-                <div className="dock-fan-menu">
-                  {menuItem.submenu.map((subItem, index) => {
-                    const { x, y } = calculateFanPosition(index, menuItem.submenu.length)
-                    return (
-                      <div
-                        key={subItem.key}
-                        className={`dock-fan-item ${currentPage === subItem.key ? 'active' : ''}`}
-                        style={{
-                          transform: `translate(${x}px, ${y}px)`,
-                        }}
-                        onClick={(e) => handleSubmenuClick(subItem.key, e)}
-                      >
-                        <div className="dock-fan-icon">{subItem.icon}</div>
-                        <div className="dock-fan-label">{subItem.label}</div>
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-            </>
-          )}
+          <div className="dock-label">{window.title}</div>
         </div>
       ))}
     </div>

@@ -1,0 +1,132 @@
+/* Window Container Styles */
+
+/* 窗口容器 */
+.window-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none; /* 允许点击穿透到背景 */
+  z-index: 50;
+}
+
+/* 窗口 */
+.window {
+  position: fixed;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow:
+    0 25px 50px -12px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  pointer-events: auto; /* 恢复窗口的点击响应 */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+/* 激活的窗口 - 更高的z-index和更强的阴影 */
+.window-active {
+  box-shadow:
+    0 35px 60px -15px rgba(0, 0, 0, 0.3),
+    0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+
+/* 最大化窗口 */
+.window-maximized {
+  border-radius: 0;
+  transition: all 0.3s ease;
+}
+
+/* 窗口标题栏 */
+.window-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+/* 窗口标题 */
+.window-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.window-title-icon {
+  font-size: 16px;
+}
+
+/* 窗口控制按钮容器 */
+.window-controls {
+  display: flex;
+  gap: 8px;
+}
+
+/* 窗口控制按钮 */
+.window-control {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.window-control:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+.window-control:active {
+  transform: scale(0.95);
+}
+
+/* 关闭按钮特殊样式 */
+.window-control-close {
+  background: rgba(239, 68, 68, 0.8);
+}
+
+.window-control-close:hover {
+  background: rgba(239, 68, 68, 1);
+}
+
+/* 窗口内容区 */
+.window-content {
+  flex: 1;
+  overflow-y: auto;
+  background: #f5f5f5;
+  min-height: 0; /* 防止flex子元素溢出 */
+}
+
+/* 滚动条样式 */
+.window-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.window-content::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.window-content::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.window-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}

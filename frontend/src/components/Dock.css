@@ -1,5 +1,6 @@
 /* Dock Navigation Styles */
-/* Main Dock Container */
+
+/* Main Dock Container - 正常模式 */
 .dock {
   position: fixed;
   bottom: 30px;
@@ -19,6 +20,30 @@
     0 20px 60px rgba(0, 0, 0, 0.4),
     0 8px 20px rgba(59, 130, 246, 0.15),
     inset 0 2px 4px rgba(255, 255, 255, 0.03);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Main Dock Container - 最大化模式（窗口外） */
+.dock-maximized {
+  position: fixed;
+  bottom: -60px; /* 移出窗口外 */
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 12px 24px;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  z-index: 9999; /* 最高层级，确保在所有窗口之上 */
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.4),
+    0 8px 20px rgba(59, 130, 246, 0.15),
+    inset 0 2px 4px rgba(255, 255, 255, 0.03);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Dock Item (Parent Menu) */
@@ -34,24 +59,6 @@
   justify-content: center;
   cursor: pointer;
   transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
-/* Submenu indicator - blue dot on top-right */
-.dock-item.has-submenu .dock-icon {
-  position: relative;
-}
-
-.dock-item.has-submenu .dock-icon::after {
-  content: '';
-  position: absolute;
-  top: -2px;
-  right: -2px;
-  width: 8px;
-  height: 8px;
-  background: #3b82f6;
-  border-radius: 50%;
-  border: 1.5px solid rgba(255, 255, 255, 0.9);
-  box-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
 }
 
 /* Water drop/bubble effect at bottom */
@@ -72,12 +79,6 @@
 /* Hover effect */
 .dock-item:hover {
   transform: translateY(-6px) scale(1.1);
-  background: rgba(255, 255, 255, 0.08);
-}
-
-/* Has submenu - less movement to prevent overlapping */
-.dock-item.has-submenu:hover {
-  transform: translateY(-2px) scale(1.05);
   background: rgba(255, 255, 255, 0.08);
 }
 
@@ -135,94 +136,23 @@
   bottom: -44px;
 }
 
-/* Fan-shaped submenu container - always visible when parent is hovered */
-.dock-fan-menu {
-  position: absolute;
-  bottom: 26px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1001;
-}
-
-/* Show fan menu when hovering parent menu */
-.dock-item.has-submenu:hover .dock-fan-menu {
-  display: block;
-}
-
-/* Fan submenu items - always visible */
-.dock-fan-item {
-  position: absolute;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(25px);
-  -webkit-backdrop-filter: blur(25px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  z-index: 1002;
-}
-
-/* Fan icon */
-.dock-fan-icon {
-  font-size: 20px;
-  margin-bottom: 2px;
-  transition: transform 0.3s ease;
-}
-
-/* Fan icon hover effect */
-.dock-fan-item:hover .dock-fan-icon {
-  transform: scale(1.2);
-}
-
-/* Fan label */
-.dock-fan-label {
-  font-size: 9px;
-  color: #e2e8f0;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  white-space: nowrap;
-}
-
-/* Fan item hover effect */
-.dock-fan-item:hover {
-  background: rgba(59, 130, 246, 0.2);
-  border-color: rgba(59, 130, 246, 0.4);
-  box-shadow:
-    0 6px 30px rgba(0, 0, 0, 0.4),
-    0 3px 12px rgba(59, 130, 246, 0.3),
-    0 0 20px rgba(59, 130, 246, 0.2);
-}
-
-/* Fan item active state */
-.dock-fan-item.active {
-  background: linear-gradient(
-    135deg,
-    rgba(59, 130, 246, 0.3),
-    rgba(37, 99, 235, 0.3)
-  );
-  border-color: rgba(59, 130, 246, 0.5);
-}
-
-/* Invisible backdrop to prevent menu from disappearing */
-.dock-fan-backdrop {
-  position: absolute;
-  bottom: 26px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 400px;
-  height: 200px;
-  z-index: 1000;
+/* Water drop pulse animation */
+@keyframes water-drop-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: translateX(-50%) scale(1.2);
+  }
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  .dock {
+  .dock,
+  .dock-maximized {
     gap: 16px;
     padding: 10px 20px;
   }
@@ -234,10 +164,5 @@
 
   .dock-icon {
     font-size: 20px;
-  }
-
-  .dock-fan-item {
-    width: 44px;
-    height: 44px;
   }
 }
