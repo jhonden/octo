@@ -46,10 +46,10 @@ const ServiceKnowledge = () => {
     setLoading(true);
     try {
       const response = await serviceKnowledgeAPI.getAll();
-      setServices(response);
+      setServices(response.data || []);
       setPagination({
         ...pagination,
-        total: response.data.length
+        total: (response.data || []).length
       });
     } catch (error) {
       message.error('Failed to load services: ' + (error.response?.data?.message || error.message));
@@ -66,10 +66,10 @@ const ServiceKnowledge = () => {
       if (filterStatus !== 'all') params.status = filterStatus;
 
       const response = await serviceKnowledgeAPI.search(params);
-      setServices(response);
+      setServices(response.data || []);
       setPagination({
         ...pagination,
-        total: response.data.length,
+        total: (response.data || []).length,
         current: 1
       });
     } catch (error) {
@@ -245,78 +245,76 @@ const ServiceKnowledge = () => {
           onChange={setActiveTab}
           type="card"
           style={{ height: '100%' }}
-        >
-          <Tabs.TabPane
-            tab={<span><DatabaseOutlined /> Service List</span>}
-            key="services"
-          >
-            <Space direction="vertical" style={{ width: '100%' }} size="large">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h1 style={{ margin: 0, fontSize: '24px', fontWeight: '600' }}>
-                  Service List
-                </h1>
-                <Button
-                  type="primary"
-                  icon={<PlusOutlined />}
-                  onClick={handleAdd}
-                >
-                  Add Service
-                </Button>
-              </div>
+          items={[
+            {
+              key: 'services',
+              label: <span><DatabaseOutlined /> Service List</span>,
+              children: (
+                <Space direction="vertical" style={{ width: '100%' }} size="large">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <h2 style={{ margin: 0, fontSize: '20px', fontWeight: '600' }}>
+                      Service List
+                    </h2>
+                    <Button
+                      type="primary"
+                      icon={<PlusOutlined />}
+                      onClick={handleAdd}
+                    >
+                      Add Service
+                    </Button>
+                  </div>
 
-              <Space size="middle">
-                <Input
-                  placeholder="Search by service name"
-                  value={searchName}
-                  onChange={(e) => setSearchName(e.target.value)}
-                  onPressEnter={handleSearch}
-                  style={{ width: 250 }}
-                  prefix={<SearchOutlined />}
-                />
-                <Select
-                  value={filterStatus}
-                  onChange={setFilterStatus}
-                  style={{ width: 150 }}
-                >
-                  <Option value="all">All Status</Option>
-                  <Option value="draft">Draft</Option>
-                  <Option value="published">Published</Option>
-                </Select>
-                <Button onClick={handleSearch} icon={<SearchOutlined />}>
-                  Search
-                </Button>
-                <Button onClick={handleReset}>
-                  Reset
-                </Button>
-              </Space>
+                  <Space size="middle">
+                    <Input
+                      placeholder="Search by service name"
+                      value={searchName}
+                      onChange={(e) => setSearchName(e.target.value)}
+                      onPressEnter={handleSearch}
+                      style={{ width: 250 }}
+                      prefix={<SearchOutlined />}
+                    />
+                    <Select
+                      value={filterStatus}
+                      onChange={setFilterStatus}
+                      style={{ width: 150 }}
+                    >
+                      <Option value="all">All Status</Option>
+                      <Option value="draft">Draft</Option>
+                      <Option value="published">Published</Option>
+                    </Select>
+                    <Button onClick={handleSearch} icon={<SearchOutlined />}>
+                      Search
+                    </Button>
+                    <Button onClick={handleReset}>
+                      Reset
+                    </Button>
+                  </Space>
 
-              <Table
-                columns={columns}
-                dataSource={services}
-                loading={loading}
-                rowKey="id"
-                pagination={{
-                  ...pagination,
-                  onChange: (page) => setPagination({ ...pagination, current: page })
-                }}
-              />
-            </Space>
-          </Tabs.TabPane>
-
-          <Tabs.TabPane
-            tab={<span><ApiOutlined /> API List</span>}
-            key="api-list"
-          >
-            <APIList />
-          </Tabs.TabPane>
-
-          <Tabs.TabPane
-            tab={<span><ExperimentOutlined /> Knowledge Analysis</span>}
-            key="knowledge-analysis"
-          >
-            <KnowledgeAnalysis />
-          </Tabs.TabPane>
-        </Tabs>
+                  <Table
+                    columns={columns}
+                    dataSource={services}
+                    loading={loading}
+                    rowKey="id"
+                    pagination={{
+                      ...pagination,
+                      onChange: (page) => setPagination({ ...pagination, current: page })
+                    }}
+                  />
+                </Space>
+              )
+            },
+            {
+              key: 'api-list',
+              label: <span><ApiOutlined /> API List</span>,
+              children: <APIList />
+            },
+            {
+              key: 'knowledge-analysis',
+              label: <span><ExperimentOutlined /> Knowledge Analysis</span>,
+              children: <KnowledgeAnalysis />
+            }
+          ]}
+        />
       </Card>
 
       <Modal

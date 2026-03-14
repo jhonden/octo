@@ -28,7 +28,7 @@ public class ServiceKnowledgeAnalysis {
   @Column(columnDefinition = "JSONB")
   private String content; // 分析结果内容（JSON格式）
 
-  @Column(precision = 3, scale = 2)
+  @Column
   private Double confidence; // 置信度 0.00-100.00
 
   @Column(name = "start_time")
