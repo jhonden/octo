@@ -13,10 +13,11 @@ import {
   Popconfirm,
   Tabs
 } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined, DatabaseOutlined, ApiOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined, DatabaseOutlined, ApiOutlined, ExperimentOutlined } from '@ant-design/icons';
 import { serviceKnowledgeAPI, serviceRepositoryAPI } from '../api/api';
 import RepositoryManage from '../components/RepositoryManage';
 import APIList from '../components/APIList';
+import KnowledgeAnalysis from '../components/KnowledgeAnalysis';
 
 const { Option } = Select;
 
@@ -38,10 +39,8 @@ const ServiceKnowledge = () => {
   const [selectedService, setSelectedService] = useState(null);
 
   useEffect(() => {
-    if (activeTab === 'services') {
-      loadServices();
-    }
-  }, [activeTab]);
+    loadServices();
+  }, []);
 
   const loadServices = async () => {
     setLoading(true);
@@ -309,6 +308,13 @@ const ServiceKnowledge = () => {
             key="api-list"
           >
             <APIList />
+          </Tabs.TabPane>
+
+          <Tabs.TabPane
+            tab={<span><ExperimentOutlined /> Knowledge Analysis</span>}
+            key="knowledge-analysis"
+          >
+            <KnowledgeAnalysis />
           </Tabs.TabPane>
         </Tabs>
       </Card>
