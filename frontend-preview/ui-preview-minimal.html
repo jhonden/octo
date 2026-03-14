@@ -71,20 +71,8 @@
 
     .header-left {
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       gap: 8px;
-      margin-top: -8px;
-    }
-
-    .toggle-btn {
-      border: none;
-      background: transparent;
-      cursor: pointer;
-      padding: 8px;
-      font-size: 20px;
-      color: #5f6368;
-      transition: color 0.2s ease;
-      margin-left: -4px;
     }
 
     .toggle-btn:hover {
@@ -157,6 +145,26 @@
 
     .sidebar.collapsed {
       width: 72px;
+    }
+
+    .sidebar-toggle {
+      width: 100%;
+      padding: 16px;
+      border-top: 1px solid #e5e7eb;
+      background: #f5f5f5;
+      border: none;
+      cursor: pointer;
+      font-size: 20px;
+      color: #5f6368;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sidebar-toggle:hover {
+      background: #e5e7eb;
+      color: #1a1a1a;
     }
 
     .menu {
@@ -443,7 +451,6 @@
   <!-- 顶部导航栏 -->
   <header class="header">
     <div class="header-left">
-      <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
       <div class="brand">
         <img src="octo_logo.jpg" alt="Octo Logo" class="brand-logo-img" />
         <div class="brand-text">
@@ -476,6 +483,7 @@
             <span class="menu-text">设计空间</span>
           </div>
         </nav>
+        <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
       </aside>
 
       <!-- 主内容区 -->
