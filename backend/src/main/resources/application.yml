@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: service-knowledge-manager
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/skm_db
+    username: skm_user
+    password: skm_password
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+server:
+  port: 8080
+
+skm:
+  agreed-directory-path: ${user.home}/skm-agreed-directory
+  design-spaces-base-path: ${user.home}/skm-design-spaces
+
+logging:
+  level:
+    com.skm: DEBUG
+    org.springframework.web: INFO
