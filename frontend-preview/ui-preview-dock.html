@@ -142,11 +142,11 @@
       transform: translateX(-50%);
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 16px 32px;
+      gap: 20px;
+      padding: 12px 24px;
       background: rgba(255,255,255,0.04);
       backdrop-filter: blur(20px);
-      border-radius: 24px;
+      border-radius: 20px;
       border: 1px solid rgba(255,255,255,0.06);
       z-index: 1000;
       box-shadow: 0 20px 60px rgba(0,0,0,0.4),
@@ -157,9 +157,9 @@
     /* Dock 图标 */
     .dock-item {
       position: relative;
-      width: 64px;
-      height: 64px;
-      border-radius: 16px;
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
       background: rgba(255,255,255,0.05);
       display: flex;
       flex-direction: column;
@@ -167,6 +167,24 @@
       justify-content: center;
       cursor: pointer;
       transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    /* 子菜单指示器 */
+    .dock-item.has-submenu .dock-icon {
+      position: relative;
+    }
+
+    .dock-item.has-submenu .dock-icon::after {
+      content: '';
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      width: 8px;
+      height: 8px;
+      background: #3b82f6;
+      border-radius: 50%;
+      border: 1.5px solid rgba(255,255,255,0.9);
+      box-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
     }
 
     .dock-item::before {
@@ -191,27 +209,33 @@
     }
 
     .dock-item:hover {
-      transform: translateY(-8px) scale(1.15);
+      transform: translateY(-6px) scale(1.1);
+      background: rgba(255,255,255,0.08);
+    }
+
+    /* 有子菜单的项，hover时不弹起（因为要显示气泡） */
+    .dock-item.has-submenu:hover {
+      transform: translateY(-2px) scale(1.05);
       background: rgba(255,255,255,0.08);
     }
 
     .dock-item.active {
-      transform: translateY(-12px) scale(1.2);
+      transform: translateY(-10px) scale(1.15);
       background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(37, 99, 235, 0.3));
     }
 
     .dock-item.active::before {
       opacity: 1;
-      bottom: -16px;
-      width: 10px;
-      height: 10px;
+      bottom: -14px;
+      width: 8px;
+      height: 8px;
       background: #3b82f6;
       box-shadow: 0 0 12px #3b82f6,
                   0 4px 24px rgba(255, 255, 255, 0.1);
     }
 
     .dock-icon {
-      font-size: 28px;
+      font-size: 22px;
       transition: all 0.3s ease;
     }
 
@@ -221,14 +245,14 @@
 
     .dock-label {
       position: absolute;
-      bottom: -40px;
+      bottom: -36px;
       left: 50%;
       transform: translateX(-50%);
       background: rgba(0,0,0,0.9);
       color: #ffffff;
-      padding: 6px 12px;
-      border-radius: 8px;
-      font-size: 12px;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 11px;
       font-weight: 600;
       white-space: nowrap;
       opacity: 0.3;
@@ -239,7 +263,114 @@
     .dock-item:hover .dock-label,
     .dock-item.active .dock-label {
       opacity: 1;
-      bottom: -50px;
+      bottom: -44px;
+    }
+
+    /* 扇形子菜单容器 */
+    .dock-fan-menu {
+      position: absolute;
+      bottom: 26px; /* 父菜单高度的一半，确保圆心在父菜单底部中心 */
+      left: 50%;
+      transform: translateX(-50%);
+      pointer-events: none;
+      z-index: 1001;
+    }
+
+    /* 扇形子菜单项 */
+    .dock-fan-item {
+      position: absolute;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(25px);
+      border: 1px solid rgba(255,255,255,0.15);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      pointer-events: none;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3),
+                  0 2px 8px rgba(59, 130, 246, 0.1);
+    }
+
+    .dock-fan-icon {
+      font-size: 20px;
+      margin-bottom: 2px;
+      transition: transform 0.3s ease;
+    }
+
+    .dock-fan-label {
+      font-size: 9px;
+      color: #e2e8f0;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+
+    /* 子菜单项默认状态：从圆心开始，不可见 */
+    .dock-fan-item {
+      transform: translate(0px, 0px);
+    }
+
+    /* 悬停父菜单时显示扇形子菜单，子菜单项移动到各自位置 */
+    .dock-item.has-submenu:hover .dock-fan-menu .dock-fan-item {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .dock-item.has-submenu:hover .dock-fan-menu .dock-fan-item:nth-child(1) {
+      /* -60度: 左侧最远 */
+      transform: translate(-86px, -50px);
+    }
+    .dock-item.has-submenu:hover .dock-fan-menu .dock-fan-item:nth-child(2) {
+      /* -30度: 左侧 */
+      transform: translate(-50px, -87px);
+    }
+    .dock-item.has-submenu:hover .dock-fan-menu .dock-fan-item:nth-child(3) {
+      /* 0度: 正上方 */
+      transform: translate(0px, -100px);
+    }
+    .dock-item.has-submenu:hover .dock-fan-menu .dock-fan-item:nth-child(4) {
+      /* 30度: 右侧 */
+      transform: translate(50px, -87px);
+    }
+    .dock-item.has-submenu:hover .dock-fan-menu .dock-fan-item:nth-child(5) {
+      /* 60度: 右侧最远 */
+      transform: translate(86px, -50px);
+    }
+
+    /* 子菜单项 hover 效果 */
+    .dock-fan-item:hover {
+      background: rgba(59, 130, 246, 0.2);
+      border-color: rgba(59, 130, 246, 0.4);
+      transform: translateY(-24px) rotate(0deg) translateY(-65px) rotate(0deg) scale(1.15) !important;
+      box-shadow: 0 8px 30px rgba(59, 130, 246, 0.4),
+                  0 4px 16px rgba(0,0,0,0.2);
+    }
+
+    .dock-fan-item:hover .dock-fan-label {
+      color: #ffffff;
+    }
+
+    .dock-fan-item:hover .dock-fan-icon {
+      transform: scale(1.2);
+    }
+
+    .dock-fan-item.active {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(37, 99, 235, 0.3));
+      border-color: #60a5fa;
+      box-shadow: 0 8px 30px rgba(59, 130, 246, 0.5),
+                  0 4px 16px rgba(0,0,0,0.2);
+    }
+
+    .dock-fan-item.active .dock-fan-label {
+      color: #ffffff;
     }
 
     /* 装饰元素 - 环境光 */
@@ -501,47 +632,18 @@
     @media (max-width: 1200px) {
       .dock {
         bottom: 20px;
-        padding: 12px 20px;
-        gap: 6px;
+        padding: 10px 18px;
+        gap: 16px;
       }
       .dock-item {
-        width: 56px;
-        height: 56px;
+        width: 48px;
+        height: 48px;
       }
       .dock-icon {
-        font-size: 24px;
+        font-size: 20px;
       }
+    }
   </style>
-
-  /* 顶部导航液态动效背景 */
-  .header::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 200%;
-    height: 100%;
-    background: conic-gradient(from 90deg at 0% 50%, rgba(59, 130, 246, 0.2) 0%, rgba(255, 255, 255, 0.05));
-    opacity: 0.05;
-    animation: liquid-flow 15s linear infinite;
-    pointer-events: none;
-    z-index: -1;
-  }
-
-  @keyframes liquid-flow {
-    0% {
-      background: conic-gradient(from 90deg at 0% 50%, rgba(59, 130, 246, 0.2) 0%, rgba(255, 255, 255, 0.05));
-      transform: translateX(-50%);
-    }
-    50% {
-      background: conic-gradient(from 90deg at 50% 50%, rgba(59, 130, 246, 0.2) 0%, rgba(255, 255, 255, 0.05));
-      transform: translateX(0%);
-    }
-    100% {
-      background: conic-gradient(from 90deg at 100% 50%, rgba(59, 130, 246, 0.2) 0%, rgba(255, 255, 255, 0.05));
-      transform: translateX(50%);
-    }
-  }
 </head>
 <body>
   <!-- 环境光效 -->
@@ -569,9 +671,31 @@
       <span class="dock-label">仪表盘</span>
       <span class="dock-icon">📊</span>
     </div>
-    <div class="dock-item">
+    <div class="dock-item has-submenu">
       <span class="dock-label">服务知识</span>
       <span class="dock-icon">📚</span>
+      <div class="dock-fan-menu">
+        <div class="dock-fan-item">
+          <span class="dock-fan-icon">📋</span>
+          <span class="dock-fan-label">列表</span>
+        </div>
+        <div class="dock-fan-item">
+          <span class="dock-fan-icon">🕸️</span>
+          <span class="dock-fan-label">拓扑</span>
+        </div>
+        <div class="dock-fan-item">
+          <span class="dock-fan-icon">🔗</span>
+          <span class="dock-fan-label">依赖</span>
+        </div>
+        <div class="dock-fan-item">
+          <span class="dock-fan-icon">📊</span>
+          <span class="dock-fan-label">分析</span>
+        </div>
+        <div class="dock-fan-item">
+          <span class="dock-fan-icon">🔍</span>
+          <span class="dock-fan-label">搜索</span>
+        </div>
+      </div>
     </div>
     <div class="dock-item">
       <span class="dock-label">设计空间</span>
@@ -683,8 +807,22 @@
   </div>
 
   <script>
+    // Dock 图标点击
     document.querySelectorAll('.dock-item').forEach(item => {
-      item.addEventListener('click', function() {
+      item.addEventListener('click', function(e) {
+        // 如果点击的是有子菜单的项，不切换 active 状态（因为子菜单会处理）
+        if (!this.classList.contains('has-submenu')) {
+          document.querySelectorAll('.dock-item').forEach(i => i.classList.remove('active'));
+          this.classList.add('active');
+        }
+      });
+    });
+
+    // 扇形子菜单项点击
+    document.querySelectorAll('.dock-fan-item').forEach(item => {
+      item.addEventListener('click', function(e) {
+        e.stopPropagation();
+        document.querySelectorAll('.dock-fan-item').forEach(i => i.classList.remove('active'));
         document.querySelectorAll('.dock-item').forEach(i => i.classList.remove('active'));
         this.classList.add('active');
       });

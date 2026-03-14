@@ -109,24 +109,37 @@ design-space-{id}/
 
 ## 项目当前状态
 
-- 设计文档已完成：`docs/superpowers/specs/2026-03-13-service-knowledge-manager-design.md`
+- 设计文档已完成：
+  - `docs/superpowers/specs/2026-03-13-service-knowledge-manager-design.md` - 原始设计文档
+  - `docs/design/ui-design-spec-v2.md` - 更新后的 UI 设计规范 v2.0
+  - `docs/design/frontend-ui-design-case.md` - UI 设计案例记录
+- UI 原型已完成：`frontend-preview/ui-preview-dock.html` - Dock 导航设计原型
 - 技术栈已确定：Spring Boot + PostgreSQL, React + Ant Design
-- 待完成：UI设计 → 实现计划
+- 待完成：实现计划 → 后端开发 → 前端开发
 
-## UI设计任务
+## UI设计完成
 
-请使用 ui-ux-pro-max 技能为本系统设计UI界面，重点关注：
-1. 整体布局和导航结构
-2. 核心页面的界面设计
-3. Ant Design组件的最佳实践
-4. 企业级SaaS应用的视觉风格
-5. 信息架构和交互流程
+**设计风格**：Design Workspace（设计工作空间）
+- 采用 Mac OS Dock 风格的底部导航
+- 液态主题配色：深蓝色渐变 + 旋转光效 + 环境光效
+- 创新交互：扇形子菜单弹出（如同 Octo 章鱼触须）
+- 设计定位：为架构师创建专业、高效的"设计工作空间"
 
-输出格式可以是：
-- 界面描述和布局说明
-- 关键页面的线框图
-- 设计建议和原则
-- 或者其他你认为合适的格式
+**主要设计特点**：
+- Dock 导航位于底部，主菜单：仪表盘、服务知识、设计空间
+- 子菜单支持：悬停弹出扇形分布的子菜单项
+- 玻璃态设计：半透明背景 + backdrop-filter 模糊
+- 流畅动画：弹性过渡 + 旋转光效 + 悬停反馈
+
+**设计文档位置**：
+- 设计规范 v2.0：`docs/design/ui-design-spec-v2.md`
+- 设计案例记录：`docs/design/frontend-ui-design-case.md`
+- 设计原型：`frontend-preview/ui-preview-dock.html`
+
+**待实现时注意**：
+- 子菜单扇形位置计算需要在实际开发时精修
+- 响应式设计待补充（当前仅桌面端）
+- 可访问性设计待补充（键盘导航、屏幕阅读器支持）
 
 ---
 
