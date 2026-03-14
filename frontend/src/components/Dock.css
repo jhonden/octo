@@ -4,16 +4,17 @@
 .dock {
   position: fixed;
   bottom: 5px;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 5px;
+  right: 5px;
   display: flex;
   align-items: center;
+  justify-content: center; /* 菜单项居中 */
   gap: 20px;
-  padding: 12px 24px;
+  padding: 6px 24px; /* 减小上下内边距 */
   background: rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-radius: 20px;
+  border-radius: 16px; /* 减小圆角 */
   border: 1px solid rgba(255, 255, 255, 0.06);
   z-index: 1000;
   box-shadow:
@@ -27,16 +28,17 @@
 .dock-maximized {
   position: fixed;
   bottom: -60px; /* 移出窗口外 */
-  left: 50%;
-  transform: translateX(-50%);
+  left: 5px;
+  right: 5px;
   display: flex;
   align-items: center;
+  justify-content: center; /* 菜单项居中 */
   gap: 20px;
-  padding: 12px 24px;
+  padding: 6px 24px; /* 减小上下内边距 */
   background: rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-radius: 20px;
+  border-radius: 16px; /* 减小圆角 */
   border: 1px solid rgba(255, 255, 255, 0.06);
   z-index: 9999; /* 最高层级，确保在所有窗口之上 */
   box-shadow:
@@ -49,9 +51,9 @@
 /* Dock Item (Parent Menu) */
 .dock-item {
   position: relative;
-  width: 52px;
-  height: 52px;
-  border-radius: 14px;
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
   background: rgba(255, 255, 255, 0.05);
   display: flex;
   flex-direction: column;
@@ -63,11 +65,11 @@
 
 /* Hover effect */
 .dock-item:hover {
-  transform: translateY(-6px) scale(1.1);
+  transform: translateY(-4px) scale(1.08);
   background: rgba(255, 255, 255, 0.08);
 }
 
-/* Active state */
+/* Active state - 正在展示 */
 .dock-item.active {
   background: linear-gradient(
     135deg,
@@ -76,14 +78,37 @@
   );
 }
 
+/* Minimized state - 最小化 */
+.dock-item.minimized {
+  background: rgba(59, 130, 246, 0.15);
+}
+
+/* Minimized indicator - 最小化标识 */
+.dock-minimize-indicator {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 12px;
+  height: 12px;
+  background: rgba(59, 130, 246, 0.8);
+  color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+  line-height: 1;
+}
+
 /* Dock icon */
 .dock-icon {
-  font-size: 22px;
+  font-size: 20px;
   transition: all 0.3s ease;
 }
 
 .dock-item.active .dock-icon {
-  transform: scale(1.1);
+  transform: scale(1.08);
 }
 
 /* Dock label - tooltip样式，默认隐藏 */

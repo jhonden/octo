@@ -9,23 +9,17 @@ import './Dock.css'
  * 最大化模式：移到窗口外（bottom: -60px），z-index最高
  */
 const Dock = () => {
-  const { windows, openWindow, closeWindow, restoreWindow, isAnyWindowMaximized } = useWindowManager()
+  const { windows, openWindow, switchToWindow, isAnyWindowMaximized } = useWindowManager()
 
-  // 处理菜单项点击 - 打开/关闭/恢复窗口
+  // 处理菜单项点击 - 打开/激活窗口
   const handleMenuClick = (windowId) => {
     const window = windows.find(w => w.id === windowId)
     if (!window.isOpen) {
       // 窗口未打开，打开窗口
       openWindow(windowId)
-    } else if (window.isMinimized) {
-      // 窗口已最小化，恢复窗口
-      restoreWindow(windowId)
-    } else if (window.isMaximized) {
-      // 如果已最大化，不做任何操作
-      return
     } else {
-      // 窗口已打开且正常显示，不做任何操作
-      return
+      // 窗口已打开（包括最小化或最大化状态），激活它
+      switchToWindow(windowId)
     }
   }
 
@@ -34,9 +28,14 @@ const Dock = () => {
       {windows.map((window) => (
         <div
           key={window.id}
-          className={`dock-item ${window.isOpen ? 'active' : ''}`}
+          className={`dock-item ${window.isOpen ? 'active' : ''} ${
+            window.isMinimized ? 'minimized' : ''
+          }`}
           onClick={() => handleMenuClick(window.id)}
         >
+          {/* 最小化标识 */}
+          {window.isMinimized && <div className="dock-minimize-indicator">−</div>}
+
           {/* Icon */}
           <div className="dock-icon">{window.icon}</div>
 

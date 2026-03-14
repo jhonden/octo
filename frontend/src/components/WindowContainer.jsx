@@ -11,6 +11,43 @@ import './WindowContainer.css'
 const Window = ({ windowData, isActive, onClose, onMaximize, onRestore, onMinimize, onMouseDown }) => {
   const { updateWindowPosition } = useWindowManager()
 
+  // 窗口打开动画状态
+  const [shouldAnimate, setShouldAnimate] = React.useState(false)
+  const [hasAnimated, setHasAnimated] = React.useState(false)
+
+  // 追踪窗口之前的打开和最小化状态
+  const prevWindowState = React.useRef({ isOpen: false, isMinimized: false })
+
+  // 窗口首次打开或从最小化恢复时触发动画
+  React.useLayoutEffect(() => {
+    const prev = prevWindowState.current
+
+    // 判断是否需要动画：窗口变为打开 且 之前是关闭状态 或 之前是最小化状态
+    const needsAnimation = isActive && (
+      !prev.isOpen || // 之前是关闭的
+      prev.isMinimized // 之前是最小化的
+    )
+
+    if (needsAnimation && !hasAnimated) {
+      setShouldAnimate(true)
+      setHasAnimated(true)
+    }
+
+    // 更新之前的状态
+    prevWindowState.current = {
+      isOpen: windowData.isOpen,
+      isMinimized: windowData.isMinimized
+    }
+  }, [isActive, windowData.isOpen, windowData.isMinimized])
+
+  // 重置动画状态（当窗口关闭或最小化时）
+  React.useEffect(() => {
+    if (!isActive || windowData.isMinimized) {
+      setHasAnimated(false)
+      setShouldAnimate(false)
+    }
+  }, [isActive, windowData.isMinimized])
+
   // 窗口拖拽状态
   const [isDragging, setIsDragging] = React.useState(false)
   const [dragStart, setDragStart] = React.useState({ x: 0, y: 0 })
@@ -92,7 +129,7 @@ const Window = ({ windowData, isActive, onClose, onMaximize, onRestore, onMinimi
     <div
       className={`window ${isActive ? 'window-active' : ''} ${
         windowData.isMaximized ? 'window-maximized' : ''
-      }`}
+      } ${shouldAnimate ? 'window-opening' : ''}`}
       style={windowStyle}
       onMouseDown={onMouseDown}
     >
