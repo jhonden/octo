@@ -10,15 +10,18 @@ import {
   message,
   Space,
   Card,
-  Popconfirm
+  Popconfirm,
+  Tabs
 } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined, DatabaseOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined, DatabaseOutlined, ApiOutlined } from '@ant-design/icons';
 import { serviceKnowledgeAPI, serviceRepositoryAPI } from '../api/api';
 import RepositoryManage from '../components/RepositoryManage';
+import APIList from '../components/APIList';
 
 const { Option } = Select;
 
 const ServiceKnowledge = () => {
+  const [activeTab, setActiveTab] = useState('services');
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
@@ -35,14 +38,16 @@ const ServiceKnowledge = () => {
   const [selectedService, setSelectedService] = useState(null);
 
   useEffect(() => {
-    loadServices();
-  }, []);
+    if (activeTab === 'services') {
+      loadServices();
+    }
+  }, [activeTab]);
 
   const loadServices = async () => {
     setLoading(true);
     try {
       const response = await serviceKnowledgeAPI.getAll();
-      setServices(response.data);
+      setServices(response);
       setPagination({
         ...pagination,
         total: response.data.length
@@ -62,7 +67,7 @@ const ServiceKnowledge = () => {
       if (filterStatus !== 'all') params.status = filterStatus;
 
       const response = await serviceKnowledgeAPI.search(params);
-      setServices(response.data);
+      setServices(response);
       setPagination({
         ...pagination,
         total: response.data.length,
@@ -234,59 +239,78 @@ const ServiceKnowledge = () => {
   ];
 
   return (
-    <div style={{ padding: '24px' }}>
-      <Card>
-        <Space direction="vertical" style={{ width: '100%' }} size="large">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h1 style={{ margin: 0, fontSize: '24px', fontWeight: '600' }}>
-              Service Knowledge Management
-            </h1>
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={handleAdd}
-            >
-              Add Service Knowledge
-            </Button>
-          </div>
+    <div style={{ padding: '24px', height: '100%' }}>
+      <Card style={{ height: '100%' }}>
+        <Tabs
+          activeKey={activeTab}
+          onChange={setActiveTab}
+          type="card"
+          style={{ height: '100%' }}
+        >
+          <Tabs.TabPane
+            tab={<span><DatabaseOutlined /> Service List</span>}
+            key="services"
+          >
+            <Space direction="vertical" style={{ width: '100%' }} size="large">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h1 style={{ margin: 0, fontSize: '24px', fontWeight: '600' }}>
+                  Service List
+                </h1>
+                <Button
+                  type="primary"
+                  icon={<PlusOutlined />}
+                  onClick={handleAdd}
+                >
+                  Add Service
+                </Button>
+              </div>
 
-          <Space size="middle">
-            <Input
-              placeholder="Search by service name"
-              value={searchName}
-              onChange={(e) => setSearchName(e.target.value)}
-              onPressEnter={handleSearch}
-              style={{ width: 250 }}
-              prefix={<SearchOutlined />}
-            />
-            <Select
-              value={filterStatus}
-              onChange={setFilterStatus}
-              style={{ width: 150 }}
-            >
-              <Option value="all">All Status</Option>
-              <Option value="draft">Draft</Option>
-              <Option value="published">Published</Option>
-            </Select>
-            <Button onClick={handleSearch} icon={<SearchOutlined />}>
-              Search
-            </Button>
-            <Button onClick={handleReset}>
-              Reset
-            </Button>
-          </Space>
+              <Space size="middle">
+                <Input
+                  placeholder="Search by service name"
+                  value={searchName}
+                  onChange={(e) => setSearchName(e.target.value)}
+                  onPressEnter={handleSearch}
+                  style={{ width: 250 }}
+                  prefix={<SearchOutlined />}
+                />
+                <Select
+                  value={filterStatus}
+                  onChange={setFilterStatus}
+                  style={{ width: 150 }}
+                >
+                  <Option value="all">All Status</Option>
+                  <Option value="draft">Draft</Option>
+                  <Option value="published">Published</Option>
+                </Select>
+                <Button onClick={handleSearch} icon={<SearchOutlined />}>
+                  Search
+                </Button>
+                <Button onClick={handleReset}>
+                  Reset
+                </Button>
+              </Space>
 
-          <Table
-            columns={columns}
-            dataSource={services}
-            loading={loading}
-            rowKey="id"
-            pagination={{
-              ...pagination,
-              onChange: (page) => setPagination({ ...pagination, current: page })
-            }}
-          />
-        </Space>
+              <Table
+                columns={columns}
+                dataSource={services}
+                loading={loading}
+                rowKey="id"
+                pagination={{
+                  ...pagination,
+                  onChange: (page) => setPagination({ ...pagination, current: page })
+                }}
+              />
+            </Space>
+          </Tabs.TabPane>
+
+          <Tabs.TabPane
+            tab={<span><ApiOutlined /> API List</span>}
+            key="api-list"
+          >
+            <APIList />
+          </Tabs.TabPane>
+        </Tabs>
       </Card>
 
       <Modal
