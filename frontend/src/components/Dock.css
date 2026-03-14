@@ -1,0 +1,282 @@
+/* Dock Navigation Styles */
+
+/* Main Dock Container */
+.dock {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 12px 24px;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  z-index: 1000;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.4),
+    0 8px 20px rgba(59, 130, 246, 0.15),
+    inset 0 2px 4px rgba(255, 255, 255, 0.03);
+}
+
+/* Dock Item (Parent Menu) */
+.dock-item {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Submenu indicator - blue dot on top-right */
+.dock-item.has-submenu .dock-icon {
+  position: relative;
+}
+
+.dock-item.has-submenu .dock-icon::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 8px;
+  height: 8px;
+  background: #3b82f6;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
+}
+
+/* Water drop/bubble effect at bottom */
+.dock-item::before {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  opacity: 0.3;
+}
+
+/* Hover effect */
+.dock-item:hover::before {
+  opacity: 1;
+  bottom: -12px;
+  width: 8px;
+  height: 8px;
+}
+
+.dock-item:hover {
+  transform: translateY(-6px) scale(1.1);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Has submenu - less movement to prevent overlapping */
+.dock-item.has-submenu:hover {
+  transform: translateY(-2px) scale(1.05);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Active state */
+.dock-item.active {
+  transform: translateY(-10px) scale(1.15);
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.3),
+    rgba(37, 99, 235, 0.3)
+  );
+}
+
+.dock-item.active::before {
+  opacity: 1;
+  bottom: -14px;
+  width: 8px;
+  height: 8px;
+  background: #3b82f6;
+  box-shadow:
+    0 0 12px #3b82f6,
+    0 4px 24px rgba(255, 255, 255, 0.1);
+}
+
+/* Dock icon */
+.dock-icon {
+  font-size: 22px;
+  transition: all 0.3s ease;
+}
+
+.dock-item.active .dock-icon {
+  transform: scale(1.1);
+}
+
+/* Dock label */
+.dock-label {
+  position: absolute;
+  bottom: -36px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.9);
+  color: #ffffff;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0.3;
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+.dock-item:hover .dock-label,
+.dock-item.active .dock-label {
+  opacity: 1;
+  bottom: -44px;
+}
+
+/* Fan-shaped submenu container */
+.dock-fan-menu {
+  position: absolute;
+  bottom: 26px; /* Parent menu height / 2, center at bottom */
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 1001;
+}
+
+/* Fan submenu items */
+.dock-fan-item {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  pointer-events: none;
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.3),
+    0 2px 8px rgba(59, 130, 246, 0.1);
+}
+
+/* Fan icon */
+.dock-fan-icon {
+  font-size: 20px;
+  margin-bottom: 2px;
+  transition: transform 0.3s ease;
+}
+
+.dock-fan-item:hover .dock-fan-icon {
+  transform: scale(1.2);
+}
+
+/* Fan label */
+.dock-fan-label {
+  font-size: 9px;
+  color: #e2e8f0;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+/* Fan item hover effect */
+.dock-fan-item:hover {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.4);
+  box-shadow:
+    0 6px 30px rgba(0, 0, 0, 0.4),
+    0 3px 12px rgba(59, 130, 246, 0.3),
+    0 0 20px rgba(59, 130, 246, 0.2);
+}
+
+/* Fan item active state */
+.dock-fan-item.active {
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.3),
+    rgba(37, 99, 235, 0.3)
+  );
+  border-color: rgba(59, 130, 246, 0.5);
+}
+
+/* Ambient glow effect for dock */
+.dock::after {
+  content: '';
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  height: 20px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(59, 130, 246, 0.1) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+/* Animation for water drop pulse */
+@keyframes water-drop-pulse {
+  0% {
+    transform: translateX(-50%) scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateX(-50%) scale(1.5);
+    opacity: 0.3;
+  }
+  100% {
+    transform: translateX(-50%) scale(1);
+    opacity: 0.5;
+  }
+}
+
+.dock-item.active::before {
+  animation: water-drop-pulse 2s ease-in-out infinite;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .dock {
+    gap: 16px;
+    padding: 10px 20px;
+  }
+
+  .dock-item {
+    width: 48px;
+    height: 48px;
+  }
+
+  .dock-icon {
+    font-size: 20px;
+  }
+
+  .dock-fan-item {
+    width: 44px;
+    height: 44px;
+  }
+
+  .dock-fan-icon {
+    font-size: 18px;
+  }
+}

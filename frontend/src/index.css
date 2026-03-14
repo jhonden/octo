@@ -50,3 +50,32 @@ body {
 .ant-layout-content {
   padding: 24px;
 }
+
+/* App main content styles */
+.App {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+  padding: 80px 40px;
+  padding-bottom: 150px; /* Space for dock */
+}
+
+.main-content h1 {
+  font-size: 56px;
+  font-weight: 300;
+  margin-bottom: 20px;
+  background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.main-content p {
+  font-size: 16px;
+  color: #e2e8f0;
+  opacity: 0.8;
+}
