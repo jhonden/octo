@@ -106,9 +106,7 @@ const Dock = ({ currentPage, onPageChange }) => {
                         key={subItem.key}
                         className={`dock-fan-item ${currentPage === subItem.key ? 'active' : ''}`}
                         style={{
-                          transform: hoveredMenu === menuItem.key
-                            ? `translate(${x}px, ${y}px)`
-                            : 'translate(0px, 0px)',
+                          transform: `translate(${x}px, ${y}px)`,
                         }}
                         onClick={(e) => handleSubmenuClick(subItem.key, e)}
                       >
