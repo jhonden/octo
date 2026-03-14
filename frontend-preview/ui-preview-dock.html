@@ -513,6 +513,36 @@
       }
     }
   </style>
+
+  /* 顶部导航液态动效背景 */
+  .header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 200%;
+    height: 100%;
+    background: conic-gradient(from 90deg at 0% 50%, rgba(59, 130, 246, 0.2) 0%, rgba(255, 255, 255, 0.05));
+    opacity: 0.05;
+    animation: liquid-flow 15s linear infinite;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  @keyframes liquid-flow {
+    0% {
+      background: conic-gradient(from 90deg at 0% 50%, rgba(59, 130, 246, 0.2) 0%, rgba(255, 255, 255, 0.05));
+      transform: translateX(-50%);
+    }
+    50% {
+      background: conic-gradient(from 90deg at 50% 50%, rgba(59, 130, 246, 0.2) 0%, rgba(255, 255, 255, 0.05));
+      transform: translateX(0%);
+    }
+    100% {
+      background: conic-gradient(from 90deg at 100% 50%, rgba(59, 130, 246, 0.2) 0%, rgba(255, 255, 255, 0.05));
+      transform: translateX(50%);
+    }
+  }
 </head>
 <body>
   <!-- 环境光效 -->
