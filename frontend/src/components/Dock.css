@@ -3,7 +3,7 @@
 /* Main Dock Container - 正常模式 */
 .dock {
   position: fixed;
-  bottom: 30px;
+  bottom: 5px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -61,21 +61,6 @@
   transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
-/* Water drop/bubble effect at bottom */
-.dock-item::before {
-  content: '';
-  position: absolute;
-  bottom: -8px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 6px;
-  height: 6px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  transition: all 0.3s ease;
-  opacity: 0.3;
-}
-
 /* Hover effect */
 .dock-item:hover {
   transform: translateY(-6px) scale(1.1);
@@ -84,21 +69,11 @@
 
 /* Active state */
 .dock-item.active {
-  transform: translateY(-10px) scale(1.15);
   background: linear-gradient(
     135deg,
     rgba(59, 130, 246, 0.3),
     rgba(37, 99, 235, 0.3)
   );
-}
-
-/* Water drop pulse animation for active state */
-.dock-item.active::before {
-  opacity: 1;
-  bottom: -12px;
-  width: 8px;
-  height: 8px;
-  animation: water-drop-pulse 2s ease-in-out infinite;
 }
 
 /* Dock icon */
@@ -111,29 +86,29 @@
   transform: scale(1.1);
 }
 
-/* Dock label */
+/* Dock label - tooltip样式，默认隐藏 */
 .dock-label {
   position: absolute;
-  bottom: -36px;
+  bottom: 70px; /* 在图标上方显示 */
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%) translateY(10px);
   background: rgba(0, 0, 0, 0.9);
   color: #ffffff;
-  padding: 5px 10px;
+  padding: 6px 12px;
   border-radius: 6px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   white-space: nowrap;
-  opacity: 0.3;
+  opacity: 0;
   transition: all 0.3s ease;
   pointer-events: none;
+  z-index: 1001;
 }
 
-/* Show label on hover */
-.dock-item:hover .dock-label,
-.dock-item.active .dock-label {
+/* Show label on hover - 向上浮起效果 */
+.dock-item:hover .dock-label {
   opacity: 1;
-  bottom: -44px;
+  transform: translateX(-50%) translateY(0);
 }
 
 /* Water drop pulse animation */
