@@ -49,6 +49,7 @@ public class ServiceKnowledge {
   public LocalDateTime getUpdatedAt() { return updatedAt; }
 
   // Setters
+  public void setId(Long id) { this.id = id; }
   public void setServiceName(String serviceName) { this.serviceName = serviceName; }
   public void setVersion(String version) { this.version = version; }
   public void setStatus(String status) { this.status = status; }
