@@ -43,7 +43,69 @@
     /* 布局 */
     .layout {
       display: flex;
+      flex-direction: column;
       min-height: 100vh;
+    }
+
+    .main-layout {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* 顶部导航栏 */
+    .header {
+      background: #ffffff;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .toggle-btn {
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      padding: 8px;
+      font-size: 20px;
+      color: #5f6368;
+      transition: color 0.2s ease;
+    }
+
+    .toggle-btn:hover {
+      color: #1a1a1a;
+    }
+
+    .brand {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+    }
+
+    .brand-logo {
+      color: #1a1a1a;
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 2px;
+    }
+
+    .brand-slogan {
+      color: #9ca3af;
+      font-size: 14px;
+      font-weight: 400;
     }
 
     /* 侧边栏 */
@@ -53,25 +115,22 @@
       border-right: 1px solid #e5e7eb;
       display: flex;
       flex-direction: column;
+      margin-top: 64px;
+      height: calc(100vh - 64px);
+      overflow-y: auto;
+      transition: width 0.3s ease;
     }
 
-    .sidebar-logo {
-      padding: 32px 0;
-      margin-bottom: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .sidebar-logo-text {
-      color: #1a1a1a;
-      font-size: 18px;
-      font-weight: 600;
-      letter-spacing: 4px;
+    .sidebar.collapsed {
+      width: 72px;
     }
 
     .menu {
       flex: 1;
+      padding: 0 24px;
+    }
+
+    .sidebar.collapsed .menu {
       padding: 0 24px;
     }
 
@@ -84,6 +143,13 @@
       margin: 4px 0;
       cursor: pointer;
       transition: all 0.2s ease;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .sidebar.collapsed .menu-item {
+      padding: 14px 0;
+      justify-content: center;
     }
 
     .menu-item:hover {
@@ -101,11 +167,24 @@
     .menu-icon {
       font-size: 18px;
       margin-right: 12px;
+      transition: all 0.2s ease;
+    }
+
+    .sidebar.collapsed .menu-icon {
+      margin-right: 0;
+      font-size: 24px;
     }
 
     .menu-text {
       font-size: 14px;
       font-weight: 500;
+      transition: opacity 0.2s ease;
+    }
+
+    .sidebar.collapsed .menu-text {
+      opacity: 0;
+      width: 0;
+      display: none;
     }
 
     /* 主内容区 */
@@ -114,24 +193,8 @@
       background: #fafafa;
       display: flex;
       flex-direction: column;
-    }
-
-    /* 顶部导航栏 */
-    .header {
-      background: #fafafa;
-      border-bottom: 1px solid #e5e7eb;
-      padding: 0 32px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 64px;
-    }
-
-    .header-title {
-      color: #1a1a1a;
-      font-size: 18px;
-      font-weight: 600;
-      letter-spacing: 0.5px;
+      margin-top: 64px;
+      overflow-y: auto;
     }
 
     .header-actions {
@@ -343,40 +406,43 @@
   </style>
 </head>
 <body>
-  <div class="layout">
-    <!-- 侧边栏 -->
-    <aside class="sidebar">
-      <div class="sidebar-logo">
-        <span class="sidebar-logo-text">Octo</span>
+  <!-- 顶部导航栏 -->
+  <header class="header">
+    <div class="header-left">
+      <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+      <div class="brand">
+        <span class="brand-logo">Octo</span>
+        <span class="brand-slogan">服务知识，触手可及</span>
       </div>
-      <nav class="menu">
-        <div class="menu-item active">
-          <span class="menu-icon">📊</span>
-          <span class="menu-text">仪表盘</span>
-        </div>
-        <div class="menu-item">
-          <span class="menu-icon">📚</span>
-          <span class="menu-text">服务知识</span>
-        </div>
-        <div class="menu-item">
-          <span class="menu-icon">💼</span>
-          <span class="menu-text">设计空间</span>
-        </div>
-      </nav>
-    </aside>
+    </div>
+    <div class="header-actions">
+      <div class="icon-btn">🔔</div>
+      <div class="icon-btn">👤</div>
+    </div>
+  </header>
 
-    <!-- 主内容区 -->
-    <main class="main-content">
-      <!-- 顶部导航栏 -->
-      <header class="header">
-        <div class="header-title">Octo</div>
-        <div class="header-actions">
-          <div class="icon-btn">🔔</div>
-          <div class="icon-btn">👤</div>
-        </div>
-      </header>
+  <div class="layout">
+    <div class="main-layout">
+      <!-- 侧边栏 -->
+      <aside class="sidebar" id="sidebar">
+        <nav class="menu">
+          <div class="menu-item active">
+            <span class="menu-icon">📊</span>
+            <span class="menu-text">仪表盘</span>
+          </div>
+          <div class="menu-item">
+            <span class="menu-icon">📚</span>
+            <span class="menu-text">服务知识</span>
+          </div>
+          <div class="menu-item">
+            <span class="menu-icon">💼</span>
+            <span class="menu-text">设计空间</span>
+          </div>
+        </nav>
+      </aside>
 
-      <!-- 内容区 -->
+      <!-- 主内容区 -->
+      <main class="main-content">
       <div class="content">
         <h1 class="page-title">欢迎回来，架构师</h1>
         <p class="welcome-subtitle">开始你的创作之旅</p1>
@@ -475,6 +541,14 @@
         </div>
       </div>
     </main>
+    </div>
   </div>
+
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('collapsed');
+    }
+  </script>
 </body>
 </html>
