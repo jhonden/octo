@@ -183,7 +183,12 @@
   transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
-/* Show fan items when parent menu is hovered */
+/* Show fan menu and fan items when parent menu is hovered */
+.dock-item.has-submenu:hover .dock-fan-menu {
+  opacity: 1;
+  visibility: visible;
+}
+
 .dock-item.has-submenu:hover .dock-fan-item {
   opacity: 1;
   visibility: visible;
