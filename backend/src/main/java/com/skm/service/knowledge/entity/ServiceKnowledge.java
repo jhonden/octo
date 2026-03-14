@@ -19,7 +19,7 @@ public class ServiceKnowledge {
   @Column(length = 20)
   private String status = "draft";
 
-  @Column(nullable = false, columnDefinition = "jsonb")
+  @Column(nullable = false, length = 10000)
   private String knowledge;
 
   @Column(name = "created_at", updatable = false)
