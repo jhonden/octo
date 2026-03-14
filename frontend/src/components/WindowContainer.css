@@ -26,11 +26,21 @@
   flex-direction: column;
 }
 
+/* 最小化且动画结束后的窗口 - 隐藏 */
+.window-minimized-hidden {
+  display: none;
+}
+
 /* 窗口打开动画 - 初始状态完全透明 */
 .window-opening {
   opacity: 0;
   transform: scale(0.3) translateY(300px);
   animation: window-pop 600ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* 窗口关闭动画 - 初始状态不透明 */
+.window-closing {
+  animation: window-minimize 400ms cubic-bezier(0.64, 0, 0.78, 0.57) forwards;
 }
 
 @keyframes window-pop {
@@ -41,6 +51,17 @@
   100% {
     opacity: 1;
     transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes window-minimize {
+  0% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.3) translateY(300px);
   }
 }
 

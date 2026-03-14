@@ -12,8 +12,9 @@ import {
   Card,
   Popconfirm
 } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons';
-import { serviceKnowledgeAPI } from '../api/api';
+import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined, DatabaseOutlined } from '@ant-design/icons';
+import { serviceKnowledgeAPI, serviceRepositoryAPI } from '../api/api';
+import RepositoryManage from '../components/RepositoryManage';
 
 const { Option } = Select;
 
@@ -30,6 +31,8 @@ const ServiceKnowledge = () => {
     total: 0
   });
   const [form] = Form.useForm();
+  const [repoManageVisible, setRepoManageVisible] = useState(false);
+  const [selectedService, setSelectedService] = useState(null);
 
   useEffect(() => {
     loadServices();
@@ -144,6 +147,15 @@ const ServiceKnowledge = () => {
     return <Tag color="orange">Draft</Tag>;
   };
 
+  const handleManageRepositories = (record) => {
+    setSelectedService(record);
+    setRepoManageVisible(true);
+  };
+
+  const handleRepoManageSuccess = () => {
+    loadServices();
+  };
+
   const columns = [
     {
       title: 'Service Name',
@@ -168,6 +180,22 @@ const ServiceKnowledge = () => {
         { text: 'Published', value: 'published' }
       ],
       onFilter: (value, record) => record.status === value
+    },
+    {
+      title: 'Repositories',
+      dataIndex: 'id',
+      key: 'repositories',
+      width: 120,
+      render: (_, record) => (
+        <Button
+          type="link"
+          size="small"
+          icon={<DatabaseOutlined />}
+          onClick={() => handleManageRepositories(record)}
+        >
+          Manage
+        </Button>
+      )
     },
     {
       title: 'Created At',
@@ -303,6 +331,14 @@ const ServiceKnowledge = () => {
           </Form.Item>
         </Form>
       </Modal>
+
+      <RepositoryManage
+        visible={repoManageVisible}
+        serviceId={selectedService?.id}
+        serviceName={selectedService?.serviceName}
+        onCancel={() => setRepoManageVisible(false)}
+        onSuccess={handleRepoManageSuccess}
+      />
     </div>
   );
 };

@@ -16,4 +16,12 @@ export const serviceKnowledgeAPI = {
   search: (params) => api.get('/service-knowledge/search', { params })
 };
 
+export const serviceRepositoryAPI = {
+  getByServiceId: (serviceId) => api.get('/service-repositories', { params: { serviceId } }),
+  create: (data) => api.post('/service-repositories', data),
+  setPrimary: (repositoryId, serviceId) =>
+    api.post(`/service-repositories/${repositoryId}/set-primary`, null, { params: { serviceId } }),
+  delete: (id) => api.delete(`/service-repositories/${id}`)
+};
+
 export default api;

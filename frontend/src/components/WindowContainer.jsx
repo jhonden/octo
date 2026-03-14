@@ -11,8 +11,9 @@ import './WindowContainer.css'
 const Window = ({ windowData, isActive, onClose, onMaximize, onRestore, onMinimize, onMouseDown }) => {
   const { updateWindowPosition } = useWindowManager()
 
-  // 窗口打开动画状态
-  const [shouldAnimate, setShouldAnimate] = React.useState(false)
+  // 窗口打开/关闭动画状态
+  const [shouldAnimateOpen, setShouldAnimateOpen] = React.useState(false)
+  const [shouldAnimateClose, setShouldAnimateClose] = React.useState(false)
   const [hasAnimated, setHasAnimated] = React.useState(false)
 
   // 追踪窗口之前的打开和最小化状态
@@ -22,15 +23,27 @@ const Window = ({ windowData, isActive, onClose, onMaximize, onRestore, onMinimi
   React.useLayoutEffect(() => {
     const prev = prevWindowState.current
 
-    // 判断是否需要动画：窗口变为打开 且 之前是关闭状态 或 之前是最小化状态
-    const needsAnimation = isActive && (
+    // 判断是否需要打开动画：窗口变为打开 且 之前是关闭状态 或 之前是最小化状态
+    const needsOpenAnimation = isActive && (
       !prev.isOpen || // 之前是关闭的
       prev.isMinimized // 之前是最小化的
     )
 
-    if (needsAnimation && !hasAnimated) {
-      setShouldAnimate(true)
+    // 判断是否需要关闭动画：窗口变为最小化
+    const needsCloseAnimation = windowData.isMinimized && !prev.isMinimized
+
+    if (needsOpenAnimation && !hasAnimated) {
+      setShouldAnimateOpen(true)
       setHasAnimated(true)
+    }
+
+    if (needsCloseAnimation) {
+      setShouldAnimateClose(true)
+      // 关闭动画结束后重置（400ms）
+      setTimeout(() => {
+        setShouldAnimateClose(false)
+        setHasAnimated(false)
+      }, 400)
     }
 
     // 更新之前的状态
@@ -39,14 +52,6 @@ const Window = ({ windowData, isActive, onClose, onMaximize, onRestore, onMinimi
       isMinimized: windowData.isMinimized
     }
   }, [isActive, windowData.isOpen, windowData.isMinimized])
-
-  // 重置动画状态（当窗口关闭或最小化时）
-  React.useEffect(() => {
-    if (!isActive || windowData.isMinimized) {
-      setHasAnimated(false)
-      setShouldAnimate(false)
-    }
-  }, [isActive, windowData.isMinimized])
 
   // 窗口拖拽状态
   const [isDragging, setIsDragging] = React.useState(false)
@@ -129,7 +134,9 @@ const Window = ({ windowData, isActive, onClose, onMaximize, onRestore, onMinimi
     <div
       className={`window ${isActive ? 'window-active' : ''} ${
         windowData.isMaximized ? 'window-maximized' : ''
-      } ${shouldAnimate ? 'window-opening' : ''}`}
+      } ${windowData.isMinimized && !shouldAnimateClose ? 'window-minimized-hidden' : ''} ${
+        shouldAnimateOpen ? 'window-opening' : ''
+      } ${shouldAnimateClose ? 'window-closing' : ''}`}
       style={windowStyle}
       onMouseDown={onMouseDown}
     >
@@ -201,8 +208,8 @@ const WindowContainer = () => {
     switchToWindow,
   } = useWindowManager()
 
-  // 获取所有打开且未最小化的窗口
-  const openWindows = windows.filter(w => w.isOpen && !w.isMinimized)
+  // 获取所有打开的窗口（包括正在播放关闭动画的）
+  const openWindows = windows.filter(w => w.isOpen)
 
   if (openWindows.length === 0) {
     return null // 没有打开的窗口
