@@ -122,7 +122,6 @@ const Dock = ({ currentPage, onPageChange }) => {
           key={menuItem.key}
           className={`dock-item ${menuItem.hasSubmenu ? 'has-submenu' : ''} ${currentPage === menuItem.key ? 'active' : ''}`}
           onMouseEnter={() => handleMenuMouseEnter(menuItem)}
-          onMouseLeave={handleMenuMouseLeave}
           onClick={() => handleMenuClick(menuItem)}
         >
           {/* Icon */}
@@ -133,8 +132,14 @@ const Dock = ({ currentPage, onPageChange }) => {
 
           {/* Fan-shaped submenu */}
           {menuItem.hasSubmenu && menuItem.submenu && (
-            <div className="dock-fan-menu">
-              {menuItem.submenu.map((subItem, index) => {
+            <>
+              {/* Invisible backdrop to prevent menu from disappearing */}
+              <div
+                className="dock-fan-backdrop"
+                onMouseLeave={() => setHoveredMenu(null)}
+              >
+                <div className="dock-fan-menu">
+                  {menuItem.submenu.map((subItem, index) => {
                 const { x, y } = calculateFanPosition(index, menuItem.submenu.length)
                 return (
                   <div
