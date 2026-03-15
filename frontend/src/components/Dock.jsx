@@ -1,5 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useWindowManager } from './WindowManagerContext'
+import { useTranslation } from 'react-i18next'
+import { useLanguageContext } from '../contexts/LanguageContext'
+import { SettingOutlined } from '@ant-design/icons'
+import SystemConfig from './SystemConfig'
 import './Dock.css'
 
 /**
@@ -10,6 +14,12 @@ import './Dock.css'
  */
 const Dock = () => {
   const { windows, openWindow, switchToWindow, isAnyWindowMaximized } = useWindowManager()
+  const { t } = useTranslation()
+  const [systemConfigVisible, setSystemConfigVisible] = useState(false)
+  const { currentLanguage, changeLanguage } = useLanguageContext()
+
+  console.log('[Dock] 渲染, 当前语言:', currentLanguage);
+  console.log('[Dock] systemConfig.title:', t('systemConfig.title'));
 
   // 处理菜单项点击 - 打开/激活窗口
   const handleMenuClick = (windowId) => {
@@ -23,27 +33,46 @@ const Dock = () => {
     }
   }
 
+  // 处理语言切换
+  const handleLanguageChange = (lng) => {
+    changeLanguage(lng);
+    setSystemConfigVisible(false);
+  };
+
   return (
-    <div className={`dock ${isAnyWindowMaximized ? 'dock-maximized' : ''}`}>
-      {windows.map((window) => (
+    <>
+      <div className={`dock ${isAnyWindowMaximized ? 'dock-maximized' : ''}`}>
+        {windows.map((window) => (
+          <div
+            key={window.id}
+            className={`dock-item ${window.isOpen ? 'active' : ''} ${
+              window.isMinimized ? 'minimized' : ''
+            }`}
+            onClick={() => handleMenuClick(window.id)}
+          >
+            {/* 最小化标识 */}
+            {window.isMinimized && <div className="dock-minimize-indicator">−</div>}
+            {/* Icon */}
+            <div className="dock-icon">{window.icon}</div>
+            {/* Label */}
+            <div className="dock-label">{window.title}</div>
+          </div>
+        ))}
+        {/* 系统配置菜单项 */}
         <div
-          key={window.id}
-          className={`dock-item ${window.isOpen ? 'active' : ''} ${
-            window.isMinimized ? 'minimized' : ''
-          }`}
-          onClick={() => handleMenuClick(window.id)}
+          className="dock-item"
+          onClick={() => setSystemConfigVisible(true)}
         >
-          {/* 最小化标识 */}
-          {window.isMinimized && <div className="dock-minimize-indicator">−</div>}
-
-          {/* Icon */}
-          <div className="dock-icon">{window.icon}</div>
-
-          {/* Label */}
-          <div className="dock-label">{window.title}</div>
+          <div className="dock-icon"><SettingOutlined /></div>
+          <div className="dock-label">{t('systemConfig.title')}</div>
         </div>
-      ))}
-    </div>
+      </div>
+
+      <SystemConfig
+        visible={systemConfigVisible}
+        onClose={() => setSystemConfigVisible(false)}
+      />
+    </>
   )
 }
 

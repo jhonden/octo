@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState } from 'react'
+import { useTranslation } from 'react-i18next';
 
 // 创建WindowManager Context
 const WindowManagerContext = createContext(null)
@@ -8,12 +9,21 @@ const WindowManagerContext = createContext(null)
  * 管理所有窗口的状态：打开、关闭、最大化、恢复、最小化、切换
  */
 export const WindowManagerProvider = ({ children }) => {
+  const { t } = useTranslation();
+
+  console.log('[WindowManagerProvider] 渲染');
+  console.log('[WindowManagerProvider] dashboard.title:', t('dashboard.title'));
+  console.log('[WindowManagerProvider] serviceList.title:', t('serviceList.title'));
+  console.log('[WindowManagerProvider] designSpace.title:', t('designSpace.title'));
+  console.log('[WindowManagerProvider] skillsManagement.title:', t('skillsManagement.title'));
+  console.log('[WindowManagerProvider] mcpIntegration.title:', t('mcpIntegration.title'));
+
   // 窗口状态定义
   // 每个窗口包含：id, title, component, isOpen, isMaximized, isMinimized, position, size
   const [windows, setWindows] = useState([
     {
       id: 'dashboard',
-      title: '仪表盘',
+      title: t('dashboard.title'),
       icon: '📊',
       component: null, // 仪表盘使用默认内容
       isOpen: false,
@@ -24,7 +34,7 @@ export const WindowManagerProvider = ({ children }) => {
     },
     {
       id: 'services',
-      title: '服务知识',
+      title: t('serviceList.title'),
       icon: '📚',
       component: null, // 动态导入
       isOpen: false,
@@ -35,7 +45,7 @@ export const WindowManagerProvider = ({ children }) => {
     },
     {
       id: 'spaces',
-      title: '设计空间',
+      title: t('designSpace.title'),
       icon: '💼',
       component: null,
       isOpen: false,
@@ -46,7 +56,7 @@ export const WindowManagerProvider = ({ children }) => {
     },
     {
       id: 'skills',
-      title: '技能管理',
+      title: t('skillsManagement.title'),
       icon: '⚙️',
       component: null,
       isOpen: false,
@@ -57,7 +67,7 @@ export const WindowManagerProvider = ({ children }) => {
     },
     {
       id: 'mcp',
-      title: 'MCP 集成',
+      title: t('mcpIntegration.title'),
       icon: '🔌',
       component: null,
       isOpen: false,

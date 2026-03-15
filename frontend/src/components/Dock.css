@@ -104,11 +104,17 @@
 /* Dock icon */
 .dock-icon {
   font-size: 20px;
+  color: #000000;
   transition: all 0.3s ease;
 }
 
 .dock-item.active .dock-icon {
   transform: scale(1.08);
+  color: #000000;
+}
+
+.dock-item.minimized .dock-icon {
+  color: rgba(0, 0, 0, 0.7);
 }
 
 /* Dock label - tooltip样式，默认隐藏 */

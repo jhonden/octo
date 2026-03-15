@@ -1,6 +1,7 @@
 import React from 'react'
 import { createPortal } from 'react-dom'
 import { useWindowManager } from './WindowManagerContext'
+import { useTranslation } from 'react-i18next'
 import ServiceKnowledge from '../pages/ServiceKnowledge'
 import './WindowContainer.css'
 
@@ -9,7 +10,11 @@ import './WindowContainer.css'
  * 渲染单个可拖拽、可最大化的窗口
  */
 const Window = ({ windowData, isActive, onClose, onMaximize, onRestore, onMinimize, onMouseDown }) => {
-  const { updateWindowPosition } = useWindowManager()
+  const { t } = useTranslation();
+  const { updateWindowPosition } = useWindowManager();
+
+  console.log('[Window] 渲染, windowData.id:', windowData.id);
+  console.log('[Window] windowData.title:', windowData.title);
 
   // 窗口打开/关闭动画状态
   const [shouldAnimateOpen, setShouldAnimateOpen] = React.useState(false)
@@ -123,8 +128,8 @@ const Window = ({ windowData, isActive, onClose, onMaximize, onRestore, onMinimi
         return (
           <div style={{ padding: '24px' }}>
             <h1>{windowData.title}</h1>
-            <p>当前窗口: {windowData.id}</p>
-            <p>这个功能正在开发中...</p>
+            <p>{t('serviceList.title')}: {windowData.id}</p>
+            <p>{t('systemSettings.comingSoon')}</p>
           </div>
         )
     }
@@ -154,7 +159,7 @@ const Window = ({ windowData, isActive, onClose, onMaximize, onRestore, onMinimi
           <button
             className="window-control window-control-minimize"
             onClick={() => onMinimize(windowData.id)}
-            title="最小化"
+            title={t('windowControls.minimize')}
           >
             <span>−</span>
           </button>
@@ -162,7 +167,7 @@ const Window = ({ windowData, isActive, onClose, onMaximize, onRestore, onMinimi
             <button
               className="window-control window-control-restore"
               onClick={() => onRestore(windowData.id)}
-              title="恢复"
+              title={t('windowControls.restore')}
             >
               <span>◻</span>
             </button>
@@ -170,7 +175,7 @@ const Window = ({ windowData, isActive, onClose, onMaximize, onRestore, onMinimi
             <button
               className="window-control window-control-maximize"
               onClick={() => onMaximize(windowData.id)}
-              title="最大化"
+              title={t('windowControls.maximize')}
             >
               <span>□</span>
             </button>
@@ -178,7 +183,7 @@ const Window = ({ windowData, isActive, onClose, onMaximize, onRestore, onMinimi
           <button
             className="window-control window-control-close"
             onClick={() => onClose(windowData.id)}
-            title="关闭"
+            title={t('windowControls.close')}
           >
             <span>✕</span>
           </button>

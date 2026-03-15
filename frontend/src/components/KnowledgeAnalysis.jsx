@@ -8,7 +8,8 @@ import {
   Card,
   Descriptions,
   message,
-  Spin
+  Spin,
+  Modal
 } from 'antd';
 import {
   PlayCircleOutlined,
@@ -20,6 +21,7 @@ import {
   SettingOutlined,
   FileTextOutlined
 } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8080';
@@ -28,6 +30,7 @@ const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8080';
  * 服务知识分析组件
  */
 const KnowledgeAnalysis = () => {
+  const { t } = useTranslation();
   const [services, setServices] = useState([]);
   const [selectedServiceIds, setSelectedServiceIds] = useState([]);
   const [analyses, setAnalyses] = useState({});
@@ -68,7 +71,7 @@ const KnowledgeAnalysis = () => {
 
   const handleStartAnalysis = async () => {
     if (selectedServiceIds.length === 0) {
-      message.warning('Please select at least one service');
+      message.warning(t('knowledge.selectServices'));
       return;
     }
 
@@ -78,7 +81,7 @@ const KnowledgeAnalysis = () => {
         serviceIds: selectedServiceIds
       });
 
-      message.success('Analysis started successfully');
+      message.success(t('knowledge.analysisStarted'));
 
       // 开始轮询进度
       const interval = setInterval(() => {
@@ -102,16 +105,16 @@ const KnowledgeAnalysis = () => {
       setSelectedAnalysis(analysis);
       setDetailVisible(true);
     } else {
-      message.info('Analysis not completed yet');
+      message.info(t('knowledge.analysisNotCompleted'));
     }
   };
 
   const getStatusTag = (status) => {
     const statusMap = {
-      pending: { icon: <ClockCircleOutlined />, color: 'default', text: 'Pending' },
-      in_progress: { icon: <PlayCircleOutlined />, color: 'processing', text: 'In Progress' },
-      completed: { icon: <CheckCircleOutlined />, color: 'success', text: 'Completed' },
-      failed: { icon: <CloseCircleOutlined />, color: 'error', text: 'Failed' }
+      pending: { icon: <ClockCircleOutlined />, color: 'default', text: t('knowledge.pending') },
+      in_progress: { icon: <PlayCircleOutlined />, color: 'processing', text: t('knowledge.inProgress') },
+      completed: { icon: <CheckCircleOutlined />, color: 'success', text: t('knowledge.completed') },
+      failed: { icon: <CloseCircleOutlined />, color: 'error', text: t('knowledge.failed') }
     };
 
     const s = statusMap[status] || statusMap.pending;
@@ -154,13 +157,13 @@ const KnowledgeAnalysis = () => {
 
   const serviceColumns = [
     {
-      title: 'Service Name',
+      title: t('serviceList.serviceName'),
       dataIndex: 'serviceName',
       key: 'serviceName',
       sorter: (a, b) => a.serviceName.localeCompare(b.serviceName)
     },
     {
-      title: 'Status',
+      title: t('knowledge.status'),
       dataIndex: 'id',
       key: 'status',
       width: 150,
@@ -169,11 +172,11 @@ const KnowledgeAnalysis = () => {
         if (analysis) {
           return getStatusTag(analysis.status);
         }
-        return <Tag color="default">Not Analyzed</Tag>;
+        return <Tag color="default">{t('knowledge.notAnalyzed')}</Tag>;
       }
     },
     {
-      title: 'Progress',
+      title: t('knowledge.progress'),
       dataIndex: 'id',
       key: 'progress',
       width: 200,
@@ -187,7 +190,7 @@ const KnowledgeAnalysis = () => {
       }
     },
     {
-      title: 'Actions',
+      title: t('knowledge.actions'),
       key: 'actions',
       width: 150,
       render: (_, record) => (
@@ -196,7 +199,7 @@ const KnowledgeAnalysis = () => {
             type="link"
             onClick={() => handleViewDetail(record.id)}
           >
-            View Details
+            {t('knowledge.viewDetails')}
           </Button>
         </Space>
       )
@@ -205,11 +208,11 @@ const KnowledgeAnalysis = () => {
 
   return (
     <div style={{ padding: '24px' }}>
-      <Spin spinning={loading} tip="Loading services...">
+      <Spin spinning={loading} tip={t('common.loading')}>
         <Space direction="vertical" style={{ width: '100%' }} size="large">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <h2 style={{ margin: 0, fontSize: '20px', fontWeight: '600' }}>
-              Knowledge Analysis
+              {t('knowledge.title')}
             </h2>
             <Space>
               <Button
@@ -219,13 +222,13 @@ const KnowledgeAnalysis = () => {
                 disabled={selectedServiceIds.length === 0}
                 icon={<PlayCircleOutlined />}
               >
-                Start Analysis
+                {t('knowledge.startAnalysis')}
               </Button>
               <Button
                 onClick={loadServices}
                 icon={<DatabaseOutlined />}
               >
-                Refresh
+                {t('knowledge.refresh')}
               </Button>
             </Space>
           </div>
@@ -247,38 +250,38 @@ const KnowledgeAnalysis = () => {
 
         {/* 分析详情弹窗 */}
         <Modal
-          title={`Analysis Details - ${selectedAnalysis?.serviceName || ''}`}
+          title={`${t('knowledge.serviceAnalysisDetails')} - ${selectedAnalysis?.serviceName || ''}`}
           open={detailVisible}
           onCancel={() => setDetailVisible(false)}
           width={800}
           footer={[
             <Button key="close" onClick={() => setDetailVisible(false)}>
-              Close
+              {t('common.close')}
             </Button>
           ]}
         >
           {selectedAnalysis && (
             <Descriptions bordered column={1} style={{ marginTop: '16px' }}>
-              <Descriptions.Item label="Status">
+              <Descriptions.Item label={t('knowledge.status')}>
                 {getStatusTag(selectedAnalysis.status)}
               </Descriptions.Item>
-              <Descriptions.Item label="Start Time">
+              <Descriptions.Item label={t('knowledge.startTime')}>
                 {selectedAnalysis.startTime}
               </Descriptions.Item>
-              <Descriptions.Item label="End Time">
-                {selectedAnalysis.endTime || 'In Progress...'}
+              <Descriptions.Item label={t('knowledge.endTime')}>
+                {selectedAnalysis.endTime || t('knowledge.inProgress')}
               </Descriptions.Item>
-              <Descriptions.Item label="Confidence">
+              <Descriptions.Item label={t('knowledge.confidence')}>
                 {selectedAnalysis.confidence ? `${selectedAnalysis.confidence}%` : '-'}
               </Descriptions.Item>
 
               {selectedAnalysis.errorMessage && (
-                <Descriptions.Item label="Error">
+                <Descriptions.Item label={t('knowledge.error')}>
                   <Tag color="error">{selectedAnalysis.errorMessage}</Tag>
                 </Descriptions.Item>
               )}
 
-              <Descriptions.Item label="Steps" span={2}>
+              <Descriptions.Item label={t('knowledge.steps')} span={2}>
                 <Space direction="vertical" size="small" style={{ width: '100%' }}>
                   {selectedAnalysis.steps && selectedAnalysis.steps.map((step, index) => (
                     <div key={index} style={{ display: 'flex', alignItems: 'center', padding: '8px 0' }}>

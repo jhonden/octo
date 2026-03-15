@@ -1,0 +1,176 @@
+{
+  "language": "简体中文",
+  "workspace": {
+    "serviceKnowledge": "服务知识",
+    "systemConfig": "系统配置"
+  },
+  "menu": {
+    "serviceKnowledge": "服务知识",
+    "systemConfig": "系统配置",
+    "menuSystemConfig": "系统配置"
+  },
+  "common": {
+    "add": "添加",
+    "edit": "编辑",
+    "delete": "删除",
+    "save": "保存",
+    "cancel": "取消",
+    "confirm": "确认",
+    "close": "关闭",
+    "refresh": "刷新",
+    "search": "搜索",
+    "reset": "重置",
+    "manage": "管理",
+    "loading": "加载中...",
+    "notFound": "未找到",
+    "serviceName": "服务名称"
+  },
+  "serviceList": {
+    "title": "服务列表",
+    "addService": "添加服务",
+    "searchByName": "按服务名称搜索",
+    "allStatus": "全部状态",
+    "draft": "草稿",
+    "published": "已发布",
+    "serviceName": "服务名称",
+    "version": "版本",
+    "repositories": "代码仓库",
+    "createdAt": "创建时间",
+    "updatedAt": "更新时间",
+    "actions": "操作",
+    "deleteConfirm": "确定要删除此服务吗？",
+    "deleteConfirmDesc": "此操作无法撤销。",
+    "yes": "是",
+    "no": "否"
+  },
+  "serviceForm": {
+    "addTitle": "添加新服务",
+    "editTitle": "编辑服务",
+    "serviceNameLabel": "服务名称",
+    "serviceNamePlaceholder": "例如：user-service",
+    "versionLabel": "版本",
+    "versionPlaceholder": "例如：1.0.0",
+    "serviceNameRequired": "请输入服务名称",
+    "versionRequired": "请输入版本",
+    "operationSuccess": "服务创建成功",
+    "updateSuccess": "服务更新成功",
+    "operationFailed": "操作失败",
+    "pleaseFillFields": "请填写必填字段"
+  },
+  "repository": {
+    "manageTitle": "管理代码仓库",
+    "addTitle": "添加新仓库",
+    "editTitle": "编辑仓库",
+    "type": "类型",
+    "gitRepo": "Git仓库",
+    "localPath": "本地路径",
+    "branch": "分支",
+    "primary": "主仓库",
+    "urlLabel": "Git仓库URL",
+    "urlPlaceholder": "https://github.com/username/repository.git",
+    "pathLabel": "本地路径",
+    "pathPlaceholder": "/Users/username/code/service",
+    "defaultBranch": "默认分支",
+    "setAsPrimary": "设为主仓库",
+    "regularRepository": "普通仓库",
+    "deleteConfirm": "确定要删除此仓库吗？",
+    "typeRequired": "请选择仓库类型",
+    "urlRequired": "请输入Git仓库URL",
+    "pathRequired": "请输入本地路径",
+    "createdSuccess": "仓库创建成功",
+    "updatedSuccess": "仓库更新成功",
+    "deletedSuccess": "仓库删除成功",
+    "setPrimarySuccess": "主仓库设置成功",
+    "loadFailed": "加载仓库失败",
+    "createFailed": "创建仓库失败",
+    "updateFailed": "更新仓库失败",
+    "deleteFailed": "删除仓库失败",
+    "setPrimaryFailed": "设置主仓库失败",
+    "updateComing": "更新功能即将上线",
+    "selectBranch": "选择分支（可选）"
+  },
+  "knowledge": {
+    "title": "服务知识",
+    "addService": "添加服务",
+    "refresh": "刷新",
+    "selectServices": "请至少选择一个服务",
+    "analysisStarted": "分析启动成功",
+    "viewDetails": "查看详情",
+    "notAnalyzed": "未分析",
+    "status": "状态",
+    "progress": "进度",
+    "actions": "操作",
+    "startTime": "开始时间",
+    "endTime": "结束时间",
+    "confidence": "置信度",
+    "error": "错误",
+    "steps": "步骤",
+    "startAnalysis": "开始分析",
+    "serviceAnalysisDetails": "服务分析详情",
+    "pending": "待分析",
+    "inProgress": "分析中",
+    "completed": "已完成",
+    "failed": "失败",
+    "analysisNotCompleted": "分析尚未完成"
+  },
+  "systemConfig": {
+    "title": "系统配置",
+    "language": "语言",
+    "languageSettings": "语言设置",
+    "simplifiedChinese": "简体中文",
+    "english": "English",
+    "systemSettings": "系统设置"
+  },
+  "systemSettings": {
+    "comingSoon": "功能即将上线"
+  },
+  "dashboard": {
+    "title": "仪表盘"
+  },
+  "designSpace": {
+    "title": "设计空间"
+  },
+  "skillsManagement": {
+    "title": "技能管理"
+  },
+  "mcpIntegration": {
+    "title": "MCP 集成"
+  },
+  "windowControls": {
+    "minimize": "最小化",
+    "restore": "恢复",
+    "maximize": "最大化",
+    "close": "关闭"
+  },
+  "welcome": {
+    "title": "Octo - 设计工作空间",
+    "subtitle": "从底部导航栏选择一个窗口开始工作",
+    "hint": "🚀 窗口系统已启用 - 点击底部菜单打开独立窗口"
+  },
+  "apiList": {
+    "title": "API 端点",
+    "refresh": "刷新",
+    "searchByPath": "按路径搜索",
+    "filterByService": "按服务筛选",
+    "allServices": "所有服务",
+    "allMethods": "所有方法",
+    "search": "搜索",
+    "reset": "重置",
+    "method": "方法",
+    "path": "路径",
+    "description": "描述",
+    "parameters": "参数",
+    "returnType": "返回类型",
+    "noDescription": "无描述",
+    "unknown": "未知",
+    "required": "必填",
+    "totalApis": "共 {total} 个 API",
+    "details": "详情"
+  },
+  "httpMethods": {
+    "GET": "GET",
+    "POST": "POST",
+    "PUT": "PUT",
+    "DELETE": "DELETE"
+  }
+}

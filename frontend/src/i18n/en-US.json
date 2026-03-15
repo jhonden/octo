@@ -1,0 +1,176 @@
+{
+  "language": "English",
+  "workspace": {
+    "serviceKnowledge": "Service Knowledge",
+    "systemConfig": "System Config"
+  },
+  "menu": {
+    "serviceKnowledge": "Service Knowledge",
+    "systemConfig": "System Config",
+    "menuSystemConfig": "System Config"
+  },
+  "common": {
+    "add": "Add",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "close": "Close",
+    "refresh": "Refresh",
+    "search": "Search",
+    "reset": "Reset",
+    "manage": "Manage",
+    "loading": "Loading...",
+    "notFound": "Not Found",
+    "serviceName": "Service Name"
+  },
+  "serviceList": {
+    "title": "Service List",
+    "addService": "Add Service",
+    "searchByName": "Search by service name",
+    "allStatus": "All Status",
+    "draft": "Draft",
+    "published": "Published",
+    "serviceName": "Service Name",
+    "version": "Version",
+    "repositories": "Repositories",
+    "createdAt": "Created At",
+    "updatedAt": "Updated At",
+    "actions": "Actions",
+    "deleteConfirm": "Are you sure you want to delete this service?",
+    "deleteConfirmDesc": "This action cannot be undone.",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "serviceForm": {
+    "addTitle": "Add New Service",
+    "editTitle": "Edit Service",
+    "serviceNameLabel": "Service Name",
+    "serviceNamePlaceholder": "e.g., user-service",
+    "versionLabel": "Version",
+    "versionPlaceholder": "e.g., 1.0.0",
+    "serviceNameRequired": "Please enter service name",
+    "versionRequired": "Please enter version",
+    "operationSuccess": "Service created successfully",
+    "updateSuccess": "Service updated successfully",
+    "operationFailed": "Operation failed",
+    "pleaseFillFields": "Please fill in required fields"
+  },
+  "repository": {
+    "manageTitle": "Manage Repositories",
+    "addTitle": "Add New Repository",
+    "editTitle": "Edit Repository",
+    "type": "Type",
+    "gitRepo": "Git Repository",
+    "localPath": "Local Path",
+    "branch": "Branch",
+    "primary": "Primary",
+    "urlLabel": "Git Repository URL",
+    "urlPlaceholder": "https://github.com/username/repository.git",
+    "pathLabel": "Local Path",
+    "pathPlaceholder": "/Users/username/code/service",
+    "defaultBranch": "Default Branch",
+    "setAsPrimary": "Set as Primary Repository",
+    "regularRepository": "Regular Repository",
+    "deleteConfirm": "Are you sure you want to delete this repository?",
+    "typeRequired": "Please select repository type",
+    "urlRequired": "Please enter Git repository URL",
+    "pathRequired": "Please enter local path",
+    "createdSuccess": "Repository created successfully",
+    "updatedSuccess": "Repository updated successfully",
+    "deletedSuccess": "Repository deleted successfully",
+    "setPrimarySuccess": "Primary repository set successfully",
+    "loadFailed": "Failed to load repositories",
+    "createFailed": "Failed to create repository",
+    "updateFailed": "Failed to update repository",
+    "deleteFailed": "Failed to delete repository",
+    "setPrimaryFailed": "Failed to set primary repository",
+    "updateComing": "Update functionality coming soon",
+    "selectBranch": "Select branch (optional)"
+  },
+  "knowledge": {
+    "title": "Service Knowledge",
+    "addService": "Add Service",
+    "refresh": "Refresh",
+    "selectServices": "Please select at least one service",
+    "analysisStarted": "Analysis started successfully",
+    "viewDetails": "View Details",
+    "notAnalyzed": "Not Analyzed",
+    "status": "Status",
+    "progress": "Progress",
+    "actions": "Actions",
+    "startTime": "Start Time",
+    "endTime": "End Time",
+    "confidence": "Confidence",
+    "error": "Error",
+    "steps": "Steps",
+    "startAnalysis": "Start Analysis",
+    "serviceAnalysisDetails": "Analysis Details",
+    "pending": "Pending",
+    "inProgress": "In Progress",
+    "completed": "Completed",
+    "failed": "Failed",
+    "analysisNotCompleted": "Analysis not completed yet"
+  },
+  "systemConfig": {
+    "title": "System Config",
+    "language": "Language",
+    "languageSettings": "Language Settings",
+    "simplifiedChinese": "Simplified Chinese",
+    "english": "English",
+    "systemSettings": "System Settings"
+  },
+  "systemSettings": {
+    "comingSoon": "Feature coming soon"
+  },
+  "dashboard": {
+    "title": "Dashboard"
+  },
+  "designSpace": {
+    "title": "Design Space"
+  },
+  "skillsManagement": {
+    "title": "Skills Management"
+  },
+  "mcpIntegration": {
+    "title": "MCP Integration"
+  },
+  "windowControls": {
+    "minimize": "Minimize",
+    "restore": "Restore",
+    "maximize": "Maximize",
+    "close": "Close"
+  },
+  "welcome": {
+    "title": "Octo - Design Workspace",
+    "subtitle": "Select a window from the bottom navigation to start working",
+    "hint": "🚀 Window system enabled - Click the bottom menu to open independent windows"
+  },
+  "apiList": {
+    "title": "API Endpoints",
+    "refresh": "Refresh",
+    "searchByPath": "Search by path",
+    "filterByService": "Filter by service",
+    "allServices": "All Services",
+    "allMethods": "All Methods",
+    "search": "Search",
+    "reset": "Reset",
+    "method": "Method",
+    "path": "Path",
+    "description": "Description",
+    "parameters": "Parameters",
+    "returnType": "Return Type",
+    "noDescription": "No description",
+    "unknown": "Unknown",
+    "required": "Required",
+    "totalApis": "Total {total} APIs",
+    "details": "Details"
+  },
+  "httpMethods": {
+    "GET": "GET",
+    "POST": "POST",
+    "PUT": "PUT",
+    "DELETE": "DELETE"
+  }
+}
