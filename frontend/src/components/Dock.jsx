@@ -18,9 +18,6 @@ const Dock = () => {
   const [systemConfigVisible, setSystemConfigVisible] = useState(false)
   const { currentLanguage, changeLanguage } = useLanguageContext()
 
-  console.log('[Dock] 渲染, 当前语言:', currentLanguage);
-  console.log('[Dock] systemConfig.title:', t('systemConfig.title'));
-
   // 处理菜单项点击 - 打开/激活窗口
   const handleMenuClick = (windowId) => {
     const window = windows.find(w => w.id === windowId)

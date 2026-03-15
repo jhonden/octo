@@ -10,9 +10,6 @@ const SystemConfig = ({ visible, onClose }) => {
   const { t } = useTranslation();
   const { currentLanguage } = useLanguageContext();
 
-  console.log('[SystemConfig] 渲染, visible:', visible);
-  console.log('[SystemConfig] 当前语言:', currentLanguage);
-
   const handleLanguageChange = (lng) => {
     // 切换语言
     localStorage.setItem('app-language', lng);

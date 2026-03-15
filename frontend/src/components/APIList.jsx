@@ -12,6 +12,7 @@ import {
   Modal
 } from 'antd';
 import { SearchOutlined, ApiOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import { serviceKnowledgeAPI } from '../api/api';
 
 const { Option } = Select;
@@ -20,6 +21,8 @@ const { Option } = Select;
  * API列表组件（Tab 2）
  */
 const APIList = () => {
+  const { t } = useTranslation();
+
   const [apis, setApis] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchPath, setSearchPath] = useState('');
@@ -124,33 +127,33 @@ const APIList = () => {
 
   const columns = [
     {
-      title: 'Method',
+      title: t('apiList.method'),
       dataIndex: 'method',
       key: 'method',
       width: 100,
       render: (method) => getMethodTag(method)
     },
     {
-      title: 'Path',
+      title: t('apiList.path'),
       dataIndex: 'path',
       key: 'path',
       render: (path) => <span style={{ fontFamily: 'monospace' }}>{path}</span>
     },
     {
-      title: 'Service',
+      title: t('common.serviceName') || 'Service',
       dataIndex: 'serviceName',
       key: 'serviceName',
       width: 150
     },
     {
-      title: 'Description',
+      title: t('apiList.description'),
       dataIndex: 'description',
       key: 'description',
       ellipsis: true,
       render: (description) => description || '-'
     },
     {
-      title: 'Actions',
+      title: t('serviceList.actions'),
       key: 'actions',
       width: 100,
       render: (_, record) => (
@@ -159,7 +162,7 @@ const APIList = () => {
           size="small"
           onClick={() => handleViewDetail(record)}
         >
-          View Details
+          {t('apiList.details')}
         </Button>
       )
     }
@@ -170,20 +173,20 @@ const APIList = () => {
       <Space direction="vertical" style={{ width: '100%' }} size="large">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h2 style={{ margin: 0, fontSize: '20px', fontWeight: '600' }}>
-            API Endpoints
+            {t('apiList.title')}
           </h2>
           <Button
             type="primary"
             icon={<ApiOutlined />}
             onClick={loadAPIs}
           >
-            Refresh APIs
+            {t('apiList.refresh')}
           </Button>
         </div>
 
         <Space size="middle">
           <Input
-            placeholder="Search by path"
+            placeholder={t('apiList.searchByPath')}
             value={searchPath}
             onChange={(e) => setSearchPath(e.target.value)}
             onPressEnter={handleSearch}
@@ -194,9 +197,9 @@ const APIList = () => {
             value={filterService}
             onChange={setFilterService}
             style={{ width: 200 }}
-            placeholder="Filter by service"
+            placeholder={t('apiList.filterByService')}
           >
-            <Option value="all">All Services</Option>
+            <Option value="all">{t('apiList.allServices')}</Option>
             {services.map(service => (
               <Option key={service.id} value={service.id}>
                 {service.serviceName}
@@ -207,19 +210,19 @@ const APIList = () => {
             value={filterMethod}
             onChange={setFilterMethod}
             style={{ width: 150 }}
-            placeholder="Filter by method"
+            placeholder={t('apiList.allMethods')}
           >
-            <Option value="all">All Methods</Option>
-            <Option value="GET">GET</Option>
-            <Option value="POST">POST</Option>
-            <Option value="PUT">PUT</Option>
-            <Option value="DELETE">DELETE</Option>
+            <Option value="all">{t('apiList.allMethods')}</Option>
+            <Option value="GET">{t('httpMethods.GET')}</Option>
+            <Option value="POST">{t('httpMethods.POST')}</Option>
+            <Option value="PUT">{t('httpMethods.PUT')}</Option>
+            <Option value="DELETE">{t('httpMethods.DELETE')}</Option>
           </Select>
           <Button onClick={handleSearch} icon={<SearchOutlined />}>
-            Search
+            {t('apiList.search')}
           </Button>
           <Button onClick={handleReset}>
-            Reset
+            {t('common.reset')}
           </Button>
         </Space>
 
@@ -231,55 +234,55 @@ const APIList = () => {
           pagination={{
             pageSize: 20,
             showSizeChanger: true,
-            showTotal: (total) => `Total ${total} APIs`
+            showTotal: (total) => t('apiList.totalApis', { total })
           }}
         />
       </Space>
 
       {/* API详情弹窗 */}
       <Modal
-        title="API Details"
+        title={t('apiList.title') + ' - ' + t('apiList.details')}
         open={detailVisible}
         onCancel={() => setDetailVisible(false)}
         width={800}
         footer={[
           <Button key="close" onClick={() => setDetailVisible(false)}>
-            Close
+            {t('common.close')}
           </Button>
         ]}
       >
         {selectedAPI && (
           <Descriptions bordered column={1} style={{ marginTop: '16px' }}>
-            <Descriptions.Item label="Service">
+            <Descriptions.Item label={t('common.serviceName') || 'Service'}>
               {selectedAPI.serviceName}
             </Descriptions.Item>
-            <Descriptions.Item label="Method">
+            <Descriptions.Item label={t('apiList.method')}>
               {getMethodTag(selectedAPI.method)}
             </Descriptions.Item>
-            <Descriptions.Item label="Path">
+            <Descriptions.Item label={t('apiList.path')}>
               <span style={{ fontFamily: 'monospace' }}>
                 {selectedAPI.path}
               </span>
             </Descriptions.Item>
-            <Descriptions.Item label="Description">
-              {selectedAPI.description || 'No description'}
+            <Descriptions.Item label={t('apiList.description')}>
+              {selectedAPI.description || t('apiList.noDescription')}
             </Descriptions.Item>
             {selectedAPI.parameters && selectedAPI.parameters.length > 0 && (
-              <Descriptions.Item label="Parameters">
+              <Descriptions.Item label={t('apiList.parameters')}>
                 <Space direction="vertical" size="small">
                   {selectedAPI.parameters.map((param, index) => (
                     <div key={index}>
                       <strong>{param.name}</strong> ({param.type})
-                      {param.required && <Tag color="red" style={{ marginLeft: 8 }}>Required</Tag>}
+                      {param.required && <Tag color="red" style={{ marginLeft: 8 }}>{t('apiList.required')}</Tag>}
                       {param.description && <div style={{ marginTop: 4, fontSize: '12px', color: '#666' }}>{param.description}</div>}
                     </div>
                   ))}
                 </Space>
               </Descriptions.Item>
             )}
-            <Descriptions.Item label="Return Type">
+            <Descriptions.Item label={t('apiList.returnType')}>
               <span style={{ fontFamily: 'monospace' }}>
-                {selectedAPI.returnType || 'Unknown'}
+                {selectedAPI.returnType || t('apiList.unknown')}
               </span>
             </Descriptions.Item>
           </Descriptions>

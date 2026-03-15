@@ -13,9 +13,6 @@ const Window = ({ windowData, isActive, onClose, onMaximize, onRestore, onMinimi
   const { t } = useTranslation();
   const { updateWindowPosition } = useWindowManager();
 
-  console.log('[Window] 渲染, windowData.id:', windowData.id);
-  console.log('[Window] windowData.title:', windowData.title);
-
   // 窗口打开/关闭动画状态
   const [shouldAnimateOpen, setShouldAnimateOpen] = React.useState(false)
   const [shouldAnimateClose, setShouldAnimateClose] = React.useState(false)

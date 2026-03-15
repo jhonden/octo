@@ -17,8 +17,6 @@ const resources = {
 
 // 初始化i18n实例
 const savedLanguage = localStorage.getItem('app-language') || 'zh-CN';
-console.log('[i18n] 初始化, 语言:', savedLanguage);
-console.log('[i18n] 资源:', resources);
 
 i18n
   .use(LanguageDetector)
@@ -27,22 +25,17 @@ i18n
     resources,
     fallbackLng: 'zh-CN',
     lng: savedLanguage,
-    debug: true,
+    debug: false,
     interpolation: {
       escapeValue: false
     },
     react: {
       useSuspense: false
     }
-  }).then(() => {
-    console.log('[i18n] 初始化完成');
-    console.log('[i18n] 当前语言:', i18n.language);
-    console.log('[i18n] 存储的资源:', Object.keys(i18n.store.data));
   });
 
 // 导出变更语言函数
 export const changeLanguage = (lng: string) => {
-  console.log('[i18n] 切换语言:', i18n.language, '->', lng);
   localStorage.setItem('app-language', lng);
   window.location.reload();
 };

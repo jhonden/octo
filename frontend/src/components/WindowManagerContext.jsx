@@ -11,13 +11,6 @@ const WindowManagerContext = createContext(null)
 export const WindowManagerProvider = ({ children }) => {
   const { t } = useTranslation();
 
-  console.log('[WindowManagerProvider] 渲染');
-  console.log('[WindowManagerProvider] dashboard.title:', t('dashboard.title'));
-  console.log('[WindowManagerProvider] serviceList.title:', t('serviceList.title'));
-  console.log('[WindowManagerProvider] designSpace.title:', t('designSpace.title'));
-  console.log('[WindowManagerProvider] skillsManagement.title:', t('skillsManagement.title'));
-  console.log('[WindowManagerProvider] mcpIntegration.title:', t('mcpIntegration.title'));
-
   // 窗口状态定义
   // 每个窗口包含：id, title, component, isOpen, isMaximized, isMinimized, position, size
   const [windows, setWindows] = useState([

@@ -13,6 +13,7 @@ import {
   Popconfirm
 } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, StarOutlined, StarFilled } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import { serviceRepositoryAPI } from '../api/api';
 
 const { Option } = Select;
@@ -21,6 +22,7 @@ const { Option } = Select;
  * 仓库管理弹窗组件
  */
 const RepositoryManage = ({ visible, serviceId, serviceName, onCancel, onSuccess }) => {
+  const { t } = useTranslation();
   const [repositories, setRepositories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
@@ -40,7 +42,7 @@ const RepositoryManage = ({ visible, serviceId, serviceName, onCancel, onSuccess
       const response = await serviceRepositoryAPI.getByServiceId(serviceId);
       setRepositories(response);
     } catch (error) {
-      message.error('Failed to load repositories: ' + (error.response?.data?.message || error.message));
+      message.error(t('repository.loadFailed') + ': ' + (error.response?.data?.message || error.message));
     } finally {
       setLoading(false);
     }
@@ -73,21 +75,21 @@ const RepositoryManage = ({ visible, serviceId, serviceName, onCancel, onSuccess
   const handleDelete = async (id) => {
     try {
       await serviceRepositoryAPI.delete(id);
-      message.success('Repository deleted successfully');
+      message.success(t('repository.deletedSuccess'));
       loadRepositories();
       if (onSuccess) onSuccess();
     } catch (error) {
-      message.error('Failed to delete repository: ' + (error.response?.data?.message || error.message));
+      message.error(t('repository.deleteFailed') + ': ' + (error.response?.data?.message || error.message));
     }
   };
 
   const handleSetPrimary = async (record) => {
     try {
       await serviceRepositoryAPI.setPrimary(record.id, serviceId);
-      message.success('Primary repository set successfully');
+      message.success(t('repository.setPrimarySuccess'));
       loadRepositories();
     } catch (error) {
-      message.error('Failed to set primary repository: ' + (error.response?.data?.message || error.message));
+      message.error(t('repository.setPrimaryFailed') + ': ' + (error.response?.data?.message || error.message));
     }
   };
 
@@ -106,10 +108,10 @@ const RepositoryManage = ({ visible, serviceId, serviceName, onCancel, onSuccess
 
       if (editingRepo) {
         // TODO: 实现更新逻辑
-        message.info('Update functionality coming soon');
+        message.info(t('repository.updateComing'));
       } else {
         await serviceRepositoryAPI.create(data);
-        message.success('Repository created successfully');
+        message.success(t('repository.createdSuccess'));
       }
 
       setModalVisible(false);
@@ -117,16 +119,16 @@ const RepositoryManage = ({ visible, serviceId, serviceName, onCancel, onSuccess
       if (onSuccess) onSuccess();
     } catch (error) {
       if (error.errorFields) {
-        message.error('Please fill in required fields');
+        message.error(t('serviceForm.pleaseFillFields'));
       } else {
-        message.error('Operation failed: ' + (error.response?.data?.message || error.message));
+        message.error(t('serviceForm.operationFailed') + ': ' + (error.response?.data?.message || error.message));
       }
     }
   };
 
   const columns = [
     {
-      title: 'Type',
+      title: t('repository.type'),
       dataIndex: 'type',
       key: 'type',
       width: 100,
@@ -135,7 +137,7 @@ const RepositoryManage = ({ visible, serviceId, serviceName, onCancel, onSuccess
       )
     },
     {
-      title: 'Repository',
+      title: t('repository.gitRepo'),
       dataIndex: 'type',
       key: 'repository',
       render: (_, record) => (
@@ -145,13 +147,13 @@ const RepositoryManage = ({ visible, serviceId, serviceName, onCancel, onSuccess
       )
     },
     {
-      title: 'Branch',
+      title: t('repository.branch'),
       dataIndex: 'defaultBranch',
       key: 'defaultBranch',
       width: 120
     },
     {
-      title: 'Primary',
+      title: t('repository.primary'),
       dataIndex: 'isPrimary',
       key: 'isPrimary',
       width: 100,
@@ -162,7 +164,7 @@ const RepositoryManage = ({ visible, serviceId, serviceName, onCancel, onSuccess
       )
     },
     {
-      title: 'Actions',
+      title: t('serviceList.actions'),
       key: 'actions',
       width: 180,
       render: (_, record) => (
@@ -174,7 +176,7 @@ const RepositoryManage = ({ visible, serviceId, serviceName, onCancel, onSuccess
               icon={<StarOutlined />}
               onClick={() => handleSetPrimary(record)}
             >
-              Set Primary
+              {t('repository.setAsPrimary')}
             </Button>
           )}
           <Button
@@ -183,17 +185,17 @@ const RepositoryManage = ({ visible, serviceId, serviceName, onCancel, onSuccess
             icon={<EditOutlined />}
             onClick={() => handleEdit(record)}
           >
-            Edit
+            {t('common.edit')}
           </Button>
           <Popconfirm
-            title="Are you sure you want to delete this repository?"
-            description="This action cannot be undone."
+            title={t('repository.deleteConfirm')}
+            description={t('repository.deleteConfirmDesc')}
             onConfirm={() => handleDelete(record.id)}
-            okText="Yes"
-            cancelText="No"
+            okText={t('serviceList.yes')}
+            cancelText={t('serviceList.no')}
           >
             <Button type="link" danger size="small" icon={<DeleteOutlined />}>
-              Delete
+              {t('common.delete')}
             </Button>
           </Popconfirm>
         </Space>
@@ -204,13 +206,13 @@ const RepositoryManage = ({ visible, serviceId, serviceName, onCancel, onSuccess
   return (
     <>
       <Modal
-        title={`Manage Repositories - ${serviceName}`}
+        title={`${t('repository.manageTitle')} - ${serviceName}`}
         open={visible}
         onCancel={onCancel}
         width={900}
         footer={[
           <Button key="close" onClick={onCancel}>
-            Close
+            {t('common.close')}
           </Button>,
           <Button
             key="add"
@@ -218,7 +220,7 @@ const RepositoryManage = ({ visible, serviceId, serviceName, onCancel, onSuccess
             icon={<PlusOutlined />}
             onClick={handleAdd}
           >
-            Add Repository
+            {t('repository.addTitle')}
           </Button>
         ]}
       >
@@ -232,13 +234,13 @@ const RepositoryManage = ({ visible, serviceId, serviceName, onCancel, onSuccess
       </Modal>
 
       <Modal
-        title={editingRepo ? 'Edit Repository' : 'Add New Repository'}
+        title={editingRepo ? t('repository.editTitle') : t('repository.addTitle')}
         open={modalVisible}
         onOk={handleSubmit}
         onCancel={() => setModalVisible(false)}
         width={600}
-        okText="Save"
-        cancelText="Cancel"
+        okText={t('common.save')}
+        cancelText={t('common.cancel')}
       >
         <Form
           form={form}
@@ -246,31 +248,31 @@ const RepositoryManage = ({ visible, serviceId, serviceName, onCancel, onSuccess
           style={{ marginTop: '24px' }}
         >
           <Form.Item
-            label="Repository Type"
+            label={t('repository.type')}
             name="type"
-            rules={[{ required: true, message: 'Please select repository type' }]}
+            rules={[{ required: true, message: t('repository.typeRequired') }]}
           >
             <Radio.Group onChange={(e) => setRepoType(e.target.value)}>
-              <Radio.Button value="git">Git Repository</Radio.Button>
-              <Radio.Button value="local">Local Path</Radio.Button>
+              <Radio.Button value="git">{t('repository.gitRepo')}</Radio.Button>
+              <Radio.Button value="local">{t('repository.localPath')}</Radio.Button>
             </Radio.Group>
           </Form.Item>
 
           {repoType === 'git' ? (
             <>
               <Form.Item
-                label="Git Repository URL"
+                label={t('repository.urlLabel')}
                 name="url"
-                rules={[{ required: true, message: 'Please enter Git repository URL' }]}
+                rules={[{ required: true, message: t('repository.urlRequired') }]}
               >
-                <Input placeholder="https://github.com/username/repository.git" />
+                <Input placeholder={t('repository.urlPlaceholder')} />
               </Form.Item>
 
               <Form.Item
-                label="Default Branch"
+                label={t('repository.defaultBranch')}
                 name="defaultBranch"
               >
-                <Select placeholder="Select branch (optional)">
+                <Select placeholder={t('repository.selectBranch')}>
                   <Option value="main">main</Option>
                   <Option value="master">master</Option>
                   <Option value="develop">develop</Option>
@@ -279,11 +281,11 @@ const RepositoryManage = ({ visible, serviceId, serviceName, onCancel, onSuccess
             </>
           ) : (
             <Form.Item
-              label="Local Path"
+              label={t('repository.pathLabel')}
               name="path"
-              rules={[{ required: true, message: 'Please enter local path' }]}
+              rules={[{ required: true, message: t('repository.pathRequired') }]}
             >
-              <Input placeholder="/Users/username/code/service" />
+              <Input placeholder={t('repository.pathPlaceholder')} />
             </Form.Item>
           )}
 
@@ -292,8 +294,8 @@ const RepositoryManage = ({ visible, serviceId, serviceName, onCancel, onSuccess
             valuePropName="checked"
           >
             <Radio.Group>
-              <Radio value={true}>Set as Primary Repository</Radio>
-              <Radio value={false}>Regular Repository</Radio>
+              <Radio value={true}>{t('repository.setAsPrimary')}</Radio>
+              <Radio value={false}>{t('repository.regularRepository')}</Radio>
             </Radio.Group>
           </Form.Item>
         </Form>

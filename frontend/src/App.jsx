@@ -1,7 +1,6 @@
 import React from 'react'
 import { WindowManagerProvider } from './components/WindowManagerContext'
 import { I18nextProvider } from 'react-i18next';
-import { useTranslation } from 'react-i18next';
 import WindowContainer from './components/WindowContainer'
 import Dock from './components/Dock'
 import { LanguageProvider } from './contexts/LanguageContext'
@@ -13,13 +12,6 @@ import i18n from './i18n'
  * 集成窗口系统管理器和导航栏
  */
 function App() {
-  const { t } = useTranslation();
-
-  console.log('[App] 渲染, 尝试获取国际化文本');
-  console.log('[App] welcome.title:', t('welcome.title'));
-  console.log('[App] welcome.subtitle:', t('welcome.subtitle'));
-  console.log('[App] welcome.hint:', t('welcome.hint'));
-
   return (
     <I18nextProvider i18n={i18n}>
       <LanguageProvider>

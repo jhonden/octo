@@ -13,22 +13,22 @@ import {
   Popconfirm,
   Tabs
 } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined, DatabaseOutlined, ApiOutlined, ExperimentOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined, DatabaseOutlined, ExperimentOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import { serviceKnowledgeAPI, serviceRepositoryAPI } from '../api/api';
 import RepositoryManage from '../components/RepositoryManage';
-import APIList from '../components/APIList';
 import KnowledgeAnalysis from '../components/KnowledgeAnalysis';
 
 const { Option } = Select;
 
 const ServiceKnowledge = () => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('services');
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [editingService, setEditingService] = useState(null);
   const [searchName, setSearchName] = useState('');
-  const [filterStatus, setFilterStatus] = useState('all');
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
@@ -52,7 +52,7 @@ const ServiceKnowledge = () => {
         total: (response.data || []).length
       });
     } catch (error) {
-      message.error('Failed to load services: ' + (error.response?.data?.message || error.message));
+      message.error(t('repository.loadFailed') + ': ' + (error.response?.data?.message || error.message));
     } finally {
       setLoading(false);
     }
@@ -63,7 +63,6 @@ const ServiceKnowledge = () => {
     try {
       const params = {};
       if (searchName) params.name = searchName;
-      if (filterStatus !== 'all') params.status = filterStatus;
 
       const response = await serviceKnowledgeAPI.search(params);
       setServices(response.data || []);
@@ -73,7 +72,7 @@ const ServiceKnowledge = () => {
         current: 1
       });
     } catch (error) {
-      message.error('Search failed: ' + (error.response?.data?.message || error.message));
+      message.error(t('repository.createFailed') + ': ' + (error.response?.data?.message || error.message));
     } finally {
       setLoading(false);
     }
@@ -81,7 +80,6 @@ const ServiceKnowledge = () => {
 
   const handleReset = () => {
     setSearchName('');
-    setFilterStatus('all');
     loadServices();
   };
 
@@ -89,8 +87,7 @@ const ServiceKnowledge = () => {
     setEditingService(null);
     form.resetFields();
     form.setFieldsValue({
-      version: '1.0.0',
-      status: 'draft'
+      version: '1.0.0'
     });
     setModalVisible(true);
   };
@@ -99,8 +96,7 @@ const ServiceKnowledge = () => {
     setEditingService(record);
     form.setFieldsValue({
       serviceName: record.serviceName,
-      version: record.version,
-      status: record.status
+      version: record.version
     });
     setModalVisible(true);
   };
@@ -108,10 +104,10 @@ const ServiceKnowledge = () => {
   const handleDelete = async (id) => {
     try {
       await serviceKnowledgeAPI.delete(id);
-      message.success('Service deleted successfully');
+      message.success(t('repository.deletedSuccess'));
       loadServices();
     } catch (error) {
-      message.error('Failed to delete service: ' + (error.response?.data?.message || error.message));
+      message.error(t('repository.deleteFailed') + ': ' + (error.response?.data?.message || error.message));
     }
   };
 
@@ -121,34 +117,26 @@ const ServiceKnowledge = () => {
       const data = {
         serviceName: values.serviceName,
         version: values.version || '1.0.0',
-        status: values.status || 'draft',
         knowledge: editingService?.knowledge || {}
       };
 
       if (editingService) {
         await serviceKnowledgeAPI.update(editingService.id, data);
-        message.success('Service updated successfully');
+        message.success(t('serviceForm.updateSuccess'));
       } else {
         await serviceKnowledgeAPI.create(data);
-        message.success('Service created successfully');
+        message.success(t('serviceForm.operationSuccess'));
       }
 
       setModalVisible(false);
       loadServices();
     } catch (error) {
       if (error.errorFields) {
-        message.error('Please fill in required fields');
+        message.error(t('serviceForm.pleaseFillFields'));
       } else {
-        message.error('Operation failed: ' + (error.response?.data?.message || error.message));
+        message.error(t('serviceForm.operationFailed') + ': ' + (error.response?.data?.message || error.message));
       }
     }
-  };
-
-  const getStatusTag = (status) => {
-    if (status === 'published') {
-      return <Tag color="green">Published</Tag>;
-    }
-    return <Tag color="orange">Draft</Tag>;
   };
 
   const handleManageRepositories = (record) => {
@@ -162,31 +150,19 @@ const ServiceKnowledge = () => {
 
   const columns = [
     {
-      title: 'Service Name',
+      title: t('serviceList.serviceName'),
       dataIndex: 'serviceName',
       key: 'serviceName',
       sorter: (a, b) => a.serviceName.localeCompare(b.serviceName)
     },
     {
-      title: 'Version',
+      title: t('serviceList.version'),
       dataIndex: 'version',
       key: 'version',
       width: 120
     },
     {
-      title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
-      width: 120,
-      render: (status) => getStatusTag(status),
-      filters: [
-        { text: 'Draft', value: 'draft' },
-        { text: 'Published', value: 'published' }
-      ],
-      onFilter: (value, record) => record.status === value
-    },
-    {
-      title: 'Repositories',
+      title: t('serviceList.repositories'),
       dataIndex: 'id',
       key: 'repositories',
       width: 120,
@@ -197,19 +173,19 @@ const ServiceKnowledge = () => {
           icon={<DatabaseOutlined />}
           onClick={() => handleManageRepositories(record)}
         >
-          Manage
+          {t('common.manage')}
         </Button>
       )
     },
     {
-      title: 'Created At',
+      title: t('serviceList.createdAt'),
       dataIndex: 'createdAt',
       key: 'createdAt',
       width: 180,
       render: (date) => date ? new Date(date).toLocaleString() : '-'
     },
     {
-      title: 'Actions',
+      title: t('serviceList.actions'),
       key: 'actions',
       width: 150,
       render: (_, record) => (
@@ -219,17 +195,17 @@ const ServiceKnowledge = () => {
             icon={<EditOutlined />}
             onClick={() => handleEdit(record)}
           >
-            Edit
+            {t('common.edit')}
           </Button>
           <Popconfirm
-            title="Are you sure you want to delete this service?"
-            description="This action cannot be undone."
+            title={t('serviceList.deleteConfirm')}
+            description={t('serviceList.deleteConfirmDesc')}
             onConfirm={() => handleDelete(record.id)}
-            okText="Yes"
-            cancelText="No"
+            okText={t('serviceList.yes')}
+            cancelText={t('serviceList.no')}
           >
             <Button type="link" danger icon={<DeleteOutlined />}>
-              Delete
+              {t('common.delete')}
             </Button>
           </Popconfirm>
         </Space>
@@ -248,45 +224,36 @@ const ServiceKnowledge = () => {
           items={[
             {
               key: 'services',
-              label: <span><DatabaseOutlined /> Service List</span>,
+              label: <span><DatabaseOutlined /> {t('serviceList.title')}</span>,
               children: (
                 <Space direction="vertical" style={{ width: '100%' }} size="large">
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <h2 style={{ margin: 0, fontSize: '20px', fontWeight: '600' }}>
-                      Service List
+                      {t('serviceList.title')}
                     </h2>
                     <Button
                       type="primary"
                       icon={<PlusOutlined />}
                       onClick={handleAdd}
                     >
-                      Add Service
+                      {t('serviceList.addService')}
                     </Button>
                   </div>
 
                   <Space size="middle">
                     <Input
-                      placeholder="Search by service name"
+                      placeholder={t('serviceList.searchByName')}
                       value={searchName}
                       onChange={(e) => setSearchName(e.target.value)}
                       onPressEnter={handleSearch}
                       style={{ width: 250 }}
                       prefix={<SearchOutlined />}
                     />
-                    <Select
-                      value={filterStatus}
-                      onChange={setFilterStatus}
-                      style={{ width: 150 }}
-                    >
-                      <Option value="all">All Status</Option>
-                      <Option value="draft">Draft</Option>
-                      <Option value="published">Published</Option>
-                    </Select>
                     <Button onClick={handleSearch} icon={<SearchOutlined />}>
-                      Search
+                      {t('common.search')}
                     </Button>
                     <Button onClick={handleReset}>
-                      Reset
+                      {t('common.reset')}
                     </Button>
                   </Space>
 
@@ -304,13 +271,8 @@ const ServiceKnowledge = () => {
               )
             },
             {
-              key: 'api-list',
-              label: <span><ApiOutlined /> API List</span>,
-              children: <APIList />
-            },
-            {
-              key: 'knowledge-analysis',
-              label: <span><ExperimentOutlined /> Knowledge Analysis</span>,
+              key: 'knowledge',
+              label: <span><ExperimentOutlined /> {t('knowledge.title')}</span>,
               children: <KnowledgeAnalysis />
             }
           ]}
@@ -318,13 +280,13 @@ const ServiceKnowledge = () => {
       </Card>
 
       <Modal
-        title={editingService ? 'Edit Service' : 'Add New Service'}
+        title={editingService ? t('serviceForm.editTitle') : t('serviceForm.addTitle')}
         open={modalVisible}
         onOk={handleSubmit}
         onCancel={() => setModalVisible(false)}
         width={600}
-        okText="Save"
-        cancelText="Cancel"
+        okText={t('common.save')}
+        cancelText={t('common.cancel')}
       >
         <Form
           form={form}
@@ -332,30 +294,19 @@ const ServiceKnowledge = () => {
           style={{ marginTop: '24px' }}
         >
           <Form.Item
-            label="Service Name"
+            label={t('serviceForm.serviceNameLabel')}
             name="serviceName"
-            rules={[{ required: true, message: 'Please enter service name' }]}
+            rules={[{ required: true, message: t('serviceForm.serviceNameRequired') }]}
           >
-            <Input placeholder="e.g., user-service" />
+            <Input placeholder={t('serviceForm.serviceNamePlaceholder')} />
           </Form.Item>
 
           <Form.Item
-            label="Version"
+            label={t('serviceForm.versionLabel')}
             name="version"
-            rules={[{ required: true, message: 'Please enter version' }]}
+            rules={[{ required: true, message: t('serviceForm.versionRequired') }]}
           >
-            <Input placeholder="e.g., 1.0.0" />
-          </Form.Item>
-
-          <Form.Item
-            label="Status"
-            name="status"
-            rules={[{ required: true, message: 'Please select status' }]}
-          >
-            <Select>
-              <Option value="draft">Draft</Option>
-              <Option value="published">Published</Option>
-            </Select>
+            <Input placeholder={t('serviceForm.versionPlaceholder')} />
           </Form.Item>
         </Form>
       </Modal>
