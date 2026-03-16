@@ -1,7 +1,5 @@
 package com.skm.service.knowledge.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skm.service.knowledge.entity.ServiceKnowledge;
 import com.skm.service.knowledge.repository.ServiceKnowledgeRepository;
 import org.junit.jupiter.api.Test;
@@ -18,22 +16,22 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+/**
+ * ServiceKnowledge Service 单元测试 - SQLite 版本
+ * 测试 Service 业务逻辑，使用 Mock 进行单元测试
+ */
 @ExtendWith(MockitoExtension.class)
 class ServiceKnowledgeServiceTest {
 
   @Mock
   private ServiceKnowledgeRepository repository;
 
-  @Mock
-  private ObjectMapper objectMapper;
-
   @InjectMocks
   private ServiceKnowledgeService service;
 
   @Test
-  void testCreateService() throws JsonProcessingException {
+  void testCreateService() {
     // Given
-    when(objectMapper.writeValueAsString(any())).thenReturn("{}");
     when(repository.save(any())).thenAnswer(invocation -> {
       ServiceKnowledge mock = invocation.getArgument(0);
       mock.setId(1L);
@@ -58,9 +56,8 @@ class ServiceKnowledgeServiceTest {
   }
 
   @Test
-  void testCreateServiceWithoutVersion() throws JsonProcessingException {
+  void testCreateServiceWithoutVersion() {
     // Given
-    when(objectMapper.writeValueAsString(any())).thenReturn("{}");
     when(repository.save(any())).thenAnswer(invocation -> {
       ServiceKnowledge mock = invocation.getArgument(0);
       mock.setId(1L);
@@ -76,6 +73,31 @@ class ServiceKnowledgeServiceTest {
     assertNotNull(result);
     assertEquals("test-service", result.getServiceName());
     assertNull(result.getVersion());
+    assertEquals("draft", result.getStatus()); // default status
+    verify(repository).save(any());
+  }
+
+  @Test
+  void testCreateServiceWithKnowledge() {
+    // Given
+    when(repository.save(any())).thenAnswer(invocation -> {
+      ServiceKnowledge mock = invocation.getArgument(0);
+      mock.setId(1L);
+      return mock;
+    });
+
+    // When
+    Map<String, Object> data = Map.of(
+        "serviceName", "test-service",
+        "knowledge", "{\"api\":\"test\"}"
+    );
+
+    // Then
+    ServiceKnowledge result = service.create(data);
+
+    assertNotNull(result);
+    assertEquals("test-service", result.getServiceName());
+    assertEquals("{\"api\":\"test\"}", result.getKnowledge());
     assertEquals("draft", result.getStatus()); // default status
     verify(repository).save(any());
   }
@@ -187,14 +209,14 @@ class ServiceKnowledgeServiceTest {
   }
 
   @Test
-  void testUpdate() throws JsonProcessingException {
+  void testUpdate() {
     // Given
-    when(objectMapper.writeValueAsString(any())).thenReturn("{}");
     ServiceKnowledge existing = new ServiceKnowledge();
     existing.setId(1L);
     existing.setServiceName("test-service");
     existing.setVersion("1.0.0");
     existing.setStatus("draft");
+    existing.setKnowledge("{\"old\":\"data\"}");
 
     when(repository.findById(1L)).thenReturn(Optional.of(existing));
     when(repository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
@@ -210,6 +232,32 @@ class ServiceKnowledgeServiceTest {
     assertNotNull(result);
     assertEquals("2.0.0", result.getVersion());
     assertEquals("published", result.getStatus());
+    verify(repository).findById(1L);
+    verify(repository).save(any());
+  }
+
+  @Test
+  void testUpdateWithKnowledge() {
+    // Given
+    ServiceKnowledge existing = new ServiceKnowledge();
+    existing.setId(1L);
+    existing.setServiceName("test-service");
+    existing.setVersion("1.0.0");
+    existing.setStatus("draft");
+    existing.setKnowledge("{\"old\":\"data\"}");
+
+    when(repository.findById(1L)).thenReturn(Optional.of(existing));
+    when(repository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+    // When
+    Map<String, Object> data = Map.of(
+        "knowledge", "{\"new\":\"data\"}"
+    );
+    ServiceKnowledge result = service.update(1L, data);
+
+    // Then
+    assertNotNull(result);
+    assertEquals("{\"new\":\"data\"}", result.getKnowledge());
     verify(repository).findById(1L);
     verify(repository).save(any());
   }
@@ -249,5 +297,18 @@ class ServiceKnowledgeServiceTest {
     assertThrows(RuntimeException.class, () -> service.delete(999L));
     verify(repository).existsById(999L);
     verify(repository, never()).deleteById(999L);
+  }
+
+  @Test
+  void testSearchWithNullParameters() {
+    // Given
+    when(repository.search(null, null)).thenReturn(List.of());
+
+    // When
+    List<ServiceKnowledge> result = service.search(null, null);
+
+    // Then
+    assertNotNull(result);
+    verify(repository).search(null, null);
   }
 }

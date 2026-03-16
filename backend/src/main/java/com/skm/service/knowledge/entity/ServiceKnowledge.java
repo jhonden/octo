@@ -16,13 +16,15 @@ public class ServiceKnowledge {
   @Column
   private String version;
 
-  @Column(length = 20)
-  private String status = "draft";
+  @Column
+  private String status;
 
-  @Column(nullable = false, length = 10000)
+  // SQLite 使用 TEXT 类型存储 JSON 字符串（而非 PostgreSQL 的 JSONB）
+  @Column(name = "knowledge", nullable = false, length = 10000, columnDefinition = "TEXT")
+  @Lob
   private String knowledge;
 
-  @Column(name = "created_at", updatable = false)
+  @Column(name = "created_at", nullable = false, updatable = false)
   private LocalDateTime createdAt;
 
   @Column(name = "updated_at")

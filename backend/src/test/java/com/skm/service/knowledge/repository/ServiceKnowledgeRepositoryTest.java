@@ -10,6 +10,10 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * ServiceKnowledge Repository 集成测试 - SQLite 版本
+ * 测试 JPA Repository 与 SQLite 数据库的交互
+ */
 @SpringBootTest
 @Transactional
 class ServiceKnowledgeRepositoryTest {
@@ -295,5 +299,23 @@ class ServiceKnowledgeRepositoryTest {
 
     assertEquals(1, archivedResult.size());
     assertEquals("archived-service", archivedResult.get(0).getServiceName());
+  }
+
+  @Test
+  void testTextTypeStorageForJson() {
+    // Given
+    String jsonData = "{\"api\":[{\"method\":\"GET\",\"path\":\"/api/test\"}]}";
+    ServiceKnowledge sk = new ServiceKnowledge();
+    sk.setServiceName("json-test-service");
+    sk.setVersion("1.0.0");
+    sk.setKnowledge(jsonData);
+
+    // When
+    ServiceKnowledge saved = repository.save(sk);
+    ServiceKnowledge found = repository.findById(saved.getId()).orElse(null);
+
+    // Then
+    assertNotNull(found);
+    assertEquals(jsonData, found.getKnowledge());
   }
 }

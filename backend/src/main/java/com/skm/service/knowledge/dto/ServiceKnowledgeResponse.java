@@ -10,7 +10,6 @@ public class ServiceKnowledgeResponse {
   private Long id;
   private String serviceName;
   private String version;
-  private String status;
   private Object knowledge;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
@@ -24,7 +23,6 @@ public class ServiceKnowledgeResponse {
     response.setId(entity.getId());
     response.setServiceName(entity.getServiceName());
     response.setVersion(entity.getVersion());
-    response.setStatus(entity.getStatus());
     try {
       response.setKnowledge(mapper.readTree(entity.getKnowledge()));
     } catch (JsonProcessingException e) {
@@ -59,14 +57,6 @@ public class ServiceKnowledgeResponse {
 
   public void setVersion(String version) {
     this.version = version;
-  }
-
-  public String getStatus() {
-    return status;
-  }
-
-  public void setStatus(String status) {
-    this.status = status;
   }
 
   public Object getKnowledge() {

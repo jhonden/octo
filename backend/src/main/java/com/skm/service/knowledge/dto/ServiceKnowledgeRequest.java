@@ -3,7 +3,6 @@ package com.skm.service.knowledge.dto;
 public class ServiceKnowledgeRequest {
   private String serviceName;
   private String version;
-  private String status;
   private Object knowledge;
 
   public String getServiceName() {
@@ -20,14 +19,6 @@ public class ServiceKnowledgeRequest {
 
   public void setVersion(String version) {
     this.version = version;
-  }
-
-  public String getStatus() {
-    return status;
-  }
-
-  public void setStatus(String status) {
-    this.status = status;
   }
 
   public Object getKnowledge() {

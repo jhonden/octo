@@ -2,25 +2,23 @@ package com.skm.service.knowledge.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.skm.service.knowledge.entity.ServiceKnowledge;
 import com.skm.service.knowledge.repository.ServiceKnowledgeRepository;
+import com.skm.util.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Map;
 
 @Service
 public class ServiceKnowledgeService {
-
   private final ServiceKnowledgeRepository repository;
-  private final ObjectMapper objectMapper;
 
   @Autowired
-  public ServiceKnowledgeService(ServiceKnowledgeRepository repository, ObjectMapper objectMapper) {
+  public ServiceKnowledgeService(ServiceKnowledgeRepository repository) {
     this.repository = repository;
-    this.objectMapper = objectMapper;
   }
 
   public List<ServiceKnowledge> getAll() {
@@ -29,7 +27,7 @@ public class ServiceKnowledgeService {
 
   public ServiceKnowledge getById(Long id) {
     return repository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Service knowledge not found"));
+      .orElseThrow(() -> new RuntimeException("Service knowledge not found"));
   }
 
   public ServiceKnowledge getByServiceName(String serviceName) {
@@ -54,12 +52,22 @@ public class ServiceKnowledgeService {
     ServiceKnowledge sk = new ServiceKnowledge();
     sk.setServiceName(serviceName);
     sk.setVersion((String) data.getOrDefault("version", null));
-    sk.setStatus((String) data.getOrDefault("status", "draft"));
-    try {
-      sk.setKnowledge(objectMapper.writeValueAsString(data));
-    } catch (JsonProcessingException e) {
-      throw new RuntimeException("Failed to serialize knowledge data", e);
+
+    // 使用 JsonUtils 处理 JSON 序列化（先初始化）
+    String jsonString = "{}";
+    if (data.containsKey("knowledge")) {
+      Object knowledgeObj = data.get("knowledge");
+      if (knowledgeObj != null) {
+        String knowledgeStr = knowledgeObj.toString();
+        JsonNode knowledgeNode = JsonUtils.toJsonNode(knowledgeStr);
+        jsonString = JsonUtils.toJsonString(knowledgeNode);
+      } else {
+        jsonString = "{}";
+      }
     }
+
+    sk.setKnowledge(jsonString);
+    sk.setStatus((String) data.getOrDefault("status", "draft"));
 
     return repository.save(sk);
   }
@@ -68,11 +76,23 @@ public class ServiceKnowledgeService {
   public ServiceKnowledge update(Long id, Map<String, Object> data) {
     ServiceKnowledge sk = getById(id);
     sk.setVersion((String) data.get("version"));
-    sk.setStatus((String) data.get("status"));
-    try {
-      sk.setKnowledge(objectMapper.writeValueAsString(data));
-    } catch (JsonProcessingException e) {
-      throw new RuntimeException("Failed to serialize knowledge data", e);
+
+    // 使用 JsonUtils 处理 JSON 序列化
+    String jsonString = sk.getKnowledge(); // 保留原有值
+    if (data.containsKey("knowledge")) {
+      Object knowledgeObj = data.get("knowledge");
+      if (knowledgeObj != null) {
+        JsonNode knowledgeNode = JsonUtils.toJsonNode(knowledgeObj.toString());
+        jsonString = JsonUtils.toJsonString(knowledgeNode);
+      } else {
+        jsonString = "{}";
+      }
+    }
+
+    sk.setKnowledge(jsonString);
+
+    if (data.containsKey("status")) {
+      sk.setStatus((String) data.get("status"));
     }
 
     return repository.save(sk);

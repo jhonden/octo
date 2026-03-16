@@ -48,7 +48,7 @@ public class ServiceKnowledgeController {
   public List<ServiceKnowledgeResponse> search(
       @RequestParam(required = false) String name,
       @RequestParam(required = false) String status) {
-    return service.search(name, status).stream()
+    return service.search(name, null).stream()
         .map(sk -> ServiceKnowledgeResponse.fromEntity(sk, objectMapper))
         .collect(Collectors.toList());
   }
@@ -58,7 +58,6 @@ public class ServiceKnowledgeController {
     Map<String, Object> data = new java.util.HashMap<>();
     data.put("serviceName", request.getServiceName());
     data.put("version", request.getVersion());
-    data.put("status", request.getStatus());
     if (request.getKnowledge() != null) {
       data.put("knowledge", request.getKnowledge());
     }
@@ -71,7 +70,6 @@ public class ServiceKnowledgeController {
       @RequestBody ServiceKnowledgeRequest request) {
     Map<String, Object> data = new java.util.HashMap<>();
     data.put("version", request.getVersion());
-    data.put("status", request.getStatus());
     if (request.getKnowledge() != null) {
       data.put("knowledge", request.getKnowledge());
     }

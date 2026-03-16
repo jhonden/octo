@@ -2,6 +2,8 @@ package com.skm.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -10,10 +12,6 @@ import static org.junit.jupiter.api.Assertions.*;
  * JsonUtils 测试类 - TDD测试先行
  */
 class JsonUtilsTest {
-
-    // Test 1: toJsonNode - parse valid JSON string
-    @Test
-    void toJsonNode_parsesValidJsonString_returnsJsonNode() {
 
     // Test 1: toJsonNode - parse valid JSON string
     @Test
@@ -95,7 +93,6 @@ class JsonUtilsTest {
     void toJsonString_serializesJsonNode_returnsJsonString() {
         // Given
         ObjectNode node = new ObjectMapper().createObjectNode();
-        JsonNode objectMapperNode = node; // Store as JsonNode type
         node.put("name", "test");
         node.put("value", 123);
 
@@ -137,7 +134,7 @@ class JsonUtilsTest {
     @Test
     void toJsonString_withEmptyObject_returnsEmptyJsonObject() {
         // Given
-        ObjectNode emptyNode = new ObjectMapper().createObjectNode();
+        ObjectNode emptyNode = (ObjectNode) new ObjectMapper().createObjectNode();
 
         // When
         String result = JsonUtils.toJsonString(emptyNode);
@@ -150,7 +147,7 @@ class JsonUtilsTest {
     @Test
     void toJsonString_serializesArrayNode_returnsJsonArrayString() {
         // Given
-        JsonNode arrayNode = new ObjectMapper().createArrayNode();
+        ArrayNode arrayNode = new ObjectMapper().createArrayNode();
         arrayNode.add(1);
         arrayNode.add(2);
         arrayNode.add(3);
