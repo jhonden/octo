@@ -3,19 +3,22 @@ spring:
     name: service-knowledge-manager
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/skm_db
-    username: skm_user
-    password: skm_password
-    driver-class-name: org.postgresql.Driver
+    # SQLite database file (stored in user home)
+    url: jdbc:sqlite:${user.home}/.skm/skm.db
+    driver-class-name: org.sqlite.JDBC
 
   jpa:
+    database-platform: org.hibernate.dialect.SQLiteDialect
     hibernate:
       ddl-auto: update
-    show-sql: false
+      show-sql: false
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+        dialect: org.hibernate.dialect.SQLiteDialect
         format_sql: true
+        # SQLite performance tuning
+        jdbc:
+          batch_size: 50
 
   servlet:
     multipart:
